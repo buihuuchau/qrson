@@ -1,6 +1,7 @@
 @extends('web.layouts.main')
 @section('title')
-    <title>Danh sách Shipment</title>
+    <title>
+        Danh sách Mã sản phẩm</title>
 @endsection
 @section('custom_css')
     {{-- custom-style --}}
@@ -12,11 +13,30 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Shipment</h1>
+                        @if (!empty($shipment_id))
+                            <h3 class="m-0">
+                                Shipment ID: {{ $shipment_id }}
+                            </h3>
+                        @endif
+                        @if (!empty($document))
+                            <h3 class="m-0">
+                                Số chứng từ: {{ $document->id }}<br>
+                                Số lượng hiện tại: {{ $document->total_current }}<br>
+                                Số lượng tổng: {{ $document->total }}
+                            </h3>
+                        @endif
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="">Shipment</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment</a></li>
+                            @if (!empty($document))
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('web.document.list', ['document_id' => $document->id]) }}">
+                                        Số chứng từ
+                                    </a>
+                                </li>
+                            @endif
+                            <li class="breadcrumb-item active">Mã sản phẩm</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -31,7 +51,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Danh sách các Shipment ID</h3>
+                                <h3 class="card-title">Danh sách các Mã sản phẩm</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -40,26 +60,21 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
+                                            <th>Số chứng từ</th>
+                                            <th>Mã sản phẩm</th>
                                             <th>Thời gian tạo</th>
                                             <th>Thời gian chỉnh sửa</th>
-                                            <th>Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($shipments as $key => $shipment)
+                                        @foreach ($codeProducts as $key => $codeProduct)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
-                                                <td>{{ $shipment->id }}</td>
-                                                <td>{{ $shipment->created_at }}</td>
-                                                <td>{{ $shipment->updated_at }}</td>
-                                                <td>
-                                                    <a
-                                                        href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a href=""><i class="fas fa-file-export"></i></a>
-                                                </td>
+                                                <td>{{ $codeProduct->shipment_id }}</td>
+                                                <td>{{ $codeProduct->document_id }}</td>
+                                                <td>{{ $codeProduct->id }}</td>
+                                                <td>{{ $codeProduct->created_at }}</td>
+                                                <td>{{ $codeProduct->updated_at }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -67,9 +82,10 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
+                                            <th>Số chứng từ</th>
+                                            <th>Mã sản phẩm</th>
                                             <th>Thời gian tạo</th>
                                             <th>Thời gian chỉnh sửa</th>
-                                            <th>Thao tác</th>
                                         </tr>
                                     </tfoot>
                                 </table>

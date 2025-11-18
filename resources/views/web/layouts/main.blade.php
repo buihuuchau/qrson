@@ -114,6 +114,7 @@
                 "lengthChange": true, //so dong cua 1 trang
                 "searching": true, //o tim kiem
                 "ordering": true, // sap xep dong
+                "order": [],// không sắp xếp ở lần đầu vào
                 "info": true, // hien thi co tat ca bao nhieu dong
                 "autoWidth": false, // tu dong thu nho theo kich co man hinh, nen chon false de dung cho dien thoai
                 "responsive": true, // nut mo rong khi man hinh bi hep

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('phone');
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
-            $table->softDeletes();
             $table->timestamps();
         });
     }

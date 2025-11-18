@@ -19,15 +19,18 @@ class DocumentController extends Controller
 
     public function list(Request $request)
     {
-        $acceptFields = [
-            'shipment_id',
-        ];
-
-        $result = Arr::only(request()->all(), $acceptFields);
-        $shipment_id = $result['shipment_id'] ?? null;
         try {
+            $acceptFields = [
+                'shipment_id',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $shipment_id = $result['shipment_id'] ?? null;
+            $data['shipment_id'] = $shipment_id;
+
             $filterDocument = [
-                '$shipment_id' => $shipment_id,
+                'shipment_id' => $data['shipment_id'],
+                'orderBy' => 'created_at',
                 'get' => true,
             ];
             $documents = $this->documentService->filter($filterDocument);

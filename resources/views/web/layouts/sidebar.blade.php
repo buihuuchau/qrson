@@ -29,23 +29,26 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="{{ route('web.document.list') }}"
+                        class="nav-link @if (in_array(\Route::currentRouteName(), ['web.document.list'])) active @endif">
                         <p>
-                            Widgets
+                            Số chứng từ
                         </p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="{{ route('web.code-product.list') }}"
+                        class="nav-link @if (in_array(\Route::currentRouteName(), ['web.code-product.list'])) active @endif">
                         <p>
-                            Widgets
+                            Mã sản phẩm
                         </p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="{{ route('web.user.list') }}"
+                        class="nav-link @if (in_array(\Route::currentRouteName(), ['web.user.list'])) active @endif">
                         <p>
-                            Widgets
+                            Danh sách Nhân viên
                         </p>
                     </a>
                 </li>

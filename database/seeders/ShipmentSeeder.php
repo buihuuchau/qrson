@@ -15,12 +15,14 @@ class ShipmentSeeder extends Seeder
         DB::table('shipments')->truncate();
         DB::table('shipments')->insert([
                 'id' => '5100054985',
+                'status' => 'pending',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         for ($i = 1; $i <= 2; $i++) {
             DB::table('shipments')->insert([
                 'id' => 'SHIPMENT' . $i,
+                'status' => 'pending',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

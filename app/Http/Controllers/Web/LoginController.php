@@ -16,22 +16,31 @@ class LoginController extends Controller
 
     public function postLogin(Request $request)
     {
-        $acceptFields = [
-            'phone',
-            'password'
-        ];
+        try {
+            $acceptFields = [
+                'phone',
+                'password'
+            ];
+            $credentials = Arr::only(request()->all(), $acceptFields);
 
-        $credentials = Arr::only(request()->all(), $acceptFields);
-
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()['role'] == 'admin') {
-                return redirect()->route('web.shipment.list');
+            if (Auth::attempt($credentials)) {
+                if (Auth::user()['role'] == 'admin') {
+                    return redirect()->route('web.shipment.list');
+                } else {
+                    Auth::logout();
+                    return redirect()->back()->withErrors(['login' => 'Bạn không phải là Admin. Hãy dùng tài khoản Admin để đăng nhập lại.'])->withInput();
+                }
             } else {
-                Auth::logout();
-                return redirect()->back()->withErrors(['login' => 'Bạn không phải là Admin. Hãy dùng tài khoản Admin để đăng nhập lại.'])->withInput();
+                return redirect()->back()->withErrors(['login' => 'Số điện thoại hoặc mật khẩu không đúng. Vui lòng thử lại.'])->withInput();
             }
-        } else {
-            return redirect()->back()->withErrors(['login' => 'Số điện thoại hoặc mật khẩu không đúng. Vui lòng thử lại.'])->withInput();
+        } catch (\Throwable $th) {
+            //throw $th;
         }
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('web.login');
     }
 }

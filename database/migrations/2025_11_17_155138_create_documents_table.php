@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('shipment_id');
             $table->unsignedSmallInteger('total_current')->default(0);
             $table->unsignedSmallInteger('total')->default(0);
-            $table->softDeletes();
             $table->timestamps();
         });
     }

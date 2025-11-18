@@ -18,7 +18,11 @@ class ShipmentController extends Controller
     public function list()
     {
         try {
-            $shipments = $this->shipmentService->getAll();
+            $filterShipment = [
+                'orderBy' => 'created_at',
+                'get' => true,
+            ];
+            $shipments = $this->shipmentService->filter($filterShipment);
             $data['shipments'] = $shipments;
             return view('web.shipment.list', $data);
         } catch (\Throwable $th) {

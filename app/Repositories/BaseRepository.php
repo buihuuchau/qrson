@@ -272,7 +272,7 @@ abstract class BaseRepository
                                 }
                             } elseif (isset($value)) {
                                 $operator = '=';
-                                $model->where($key, $operator, $value);
+                                $model = $model->where($key, $operator, $value);
                             }
                             break;
                     }

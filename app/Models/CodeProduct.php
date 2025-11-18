@@ -4,13 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CodeProduct extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'code_products';
+    public $incrementing = false; // vì id không phải auto-increment
+    protected $keyType = 'string'; // id là string
+
+    protected $fillable = [
+        'shipment_id',
+        'document_id',
+    ];
 
     public function document()
     {

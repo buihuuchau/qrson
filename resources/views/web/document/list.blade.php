@@ -1,6 +1,7 @@
 @extends('web.layouts.main')
 @section('title')
-    <title>Danh sách Số chứng từ</title>
+    <title>
+        Danh sách Số chứng từ</title>
 @endsection
 @section('custom_css')
     {{-- custom-style --}}
@@ -12,13 +13,16 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Số chứng từ</h1>
+                        @if (!empty($shipment_id))
+                            <h3 class="m-0">
+                                Shipment ID: {{ $shipment_id }}
+                            </h3>
+                        @endif
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Shipment</a></li>
-                            <li class="breadcrumb-item">Số chứng từ</li>
-                            <li class="breadcrumb-item active">Danh sách</li>
+                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment</a></li>
+                            <li class="breadcrumb-item active">Số chứng từ</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -33,13 +37,14 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Danh sách các Shipment ID</h3>
+                                <h3 class="card-title">Danh sách các Số chứng từ</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
+                                            <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
@@ -50,8 +55,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($documents as $document)
+                                        @foreach ($documents as $key => $document)
                                             <tr>
+                                                <td>{{ $key + 1 }}</td>
                                                 <td>{{ $document->shipment_id }}</td>
                                                 <td>{{ $document->id }}</td>
                                                 <td>{{ $document->total_current }}</td>
@@ -60,7 +66,7 @@
                                                 <td>{{ $document->updated_at }}</td>
                                                 <td>
                                                     <a
-                                                        {{-- href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}"> --}}
+                                                        href="{{ route('web.code-product.list', ['shipment_id' => $document->shipment_id, 'document_id' => $document->id]) }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 </td>
@@ -69,6 +75,7 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
+                                            <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
