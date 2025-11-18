@@ -25,7 +25,7 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             if (Auth::user()['role'] == 'admin') {
-                dd('chuyển đến trang home admin');
+                return redirect()->route('web.shipment.list');
             } else {
                 Auth::logout();
                 return redirect()->back()->withErrors(['login' => 'Bạn không phải là Admin. Hãy dùng tài khoản Admin để đăng nhập lại.'])->withInput();

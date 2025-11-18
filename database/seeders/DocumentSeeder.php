@@ -18,11 +18,17 @@ class DocumentSeeder extends Seeder
             'shipment_id' => '5100054985',
             'total_current' => 1,
             'total' => 3,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
         for ($i = 1; $i <= 2; $i++) {
             DB::table('documents')->insert([
                 'id' => 'DOCUMENT' . $i,
                 'shipment_id' => '5100054985',
+                'total_current' => 0,
+                'total' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }
