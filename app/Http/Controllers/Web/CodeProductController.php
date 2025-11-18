@@ -52,13 +52,41 @@ class CodeProductController extends Controller
             if (!empty($document) && $document->total_current != $document->total) {
                 $codeProducts = $this->codeProductTempService->filter($filterCodeProduct, 'user');
             } else {
-                $codeProducts = $this->codeProductService->filter($filterCodeProduct, 'user');
+                $codeProducts = $this->codeProductService->filter($filterCodeProduct);
             }
             $data['codeProducts'] = $codeProducts;
             $data['shipment_id'] = $shipment_id;
             return view('web.codeProduct.list', $data);
         } catch (\Throwable $th) {
             abort(404);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $acceptFields = [
+                'id',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $codeProduct = $this->codeProductTempService->delete($result['id']);
+            if ($codeProduct != false) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Xóa mã sản phẩm thành công',
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Xóa mã sản phẩm thất bại',
+                ], 400);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Xóa mã sản phẩm thất bại',
+            ], 400);
         }
     }
 }

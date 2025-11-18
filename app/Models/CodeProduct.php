@@ -17,7 +17,7 @@ class CodeProduct extends Model
         'id',
         'shipment_id',
         'document_id',
-        'user_id',
+        'created_by',
     ];
 
     public function document()

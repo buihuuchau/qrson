@@ -65,6 +65,9 @@
                                             <th>Thời gian quét</th>
                                             <th>Người thực hiện</th>
                                             <th>Thực hiện manual</th>
+                                            @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                                <th>Thao tác</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -75,12 +78,27 @@
                                                 <td>{{ $codeProduct->document_id }}</td>
                                                 <td>{{ $codeProduct->id }}</td>
                                                 <td>{{ $codeProduct->created_at }}</td>
-                                                <td>{{ $codeProduct->user->name }} - {{ $codeProduct->user->phone }}</td>
+                                                <td>
+                                                    @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                                        {{ $codeProduct->user->name }} - {{ $codeProduct->user->phone }}
+                                                    @else
+                                                        {{ $codeProduct->created_by }}
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     @if ($codeProduct->scan == 'no')
                                                         X
                                                     @endif
                                                 </td>
+                                                @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                                    <td>
+
+                                                        <button class="btn btn-danger clearCodeProduct"
+                                                            value="{{ $codeProduct->id }}"><i
+                                                                class="fas fa-trash"></i></button>
+
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -93,6 +111,9 @@
                                             <th>Thời gian quét</th>
                                             <th>Người thực hiện</th>
                                             <th>Thực hiện manual</th>
+                                            @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                                <th>Thao tác</th>
+                                            @endif
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -110,5 +131,55 @@
     </div>
 @endsection
 @section('custom_script')
-    {{-- custom-script --}}
+    <script>
+        $('.clearCodeProduct').click(function(e) {
+            e.preventDefault();
+            let btn = $(this);
+            let id = $(this).val();
+            Swal.fire({
+                title: "Xác nhận xóa?",
+                text: "Mã sản phẩm " + id + " sẽ bị xóa và không thể khôi phục!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Xóa",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('web.code-product.delete') }}",
+                        data: {
+                            id: id,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            let message = response && response.message ? response.message :
+                                'Xóa mã sản phẩm thành công';
+                            Swal.fire({
+                                icon: "success",
+                                title: "Thành công",
+                                text: message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            btn.closest('tr').remove();
+                        },
+                        error: function(xhr, status, error) {
+                            let message = xhr.responseJSON && xhr.responseJSON.message ?
+                                xhr.responseJSON.message :
+                                'Đã có lỗi xảy ra';
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi",
+                                text: message,
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection
