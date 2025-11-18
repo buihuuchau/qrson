@@ -59,7 +59,7 @@
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
                                                         <i class="fas fa-file-export"></i>
                                                     </a>
-                                                    @if ($shipment->done == false)
+                                                    @if ($shipment->status == 'pending' && $shipment->document->count() == 0)
                                                         <button class="btn btn-danger clearShipment" title="Xóa"
                                                             value="{{ $shipment->id }}"><i
                                                                 class="fas fa-trash"></i></button>

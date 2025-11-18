@@ -31,15 +31,6 @@ class ShipmentController extends Controller
             ];
             $shipments = $this->shipmentService->filter($filterShipment, 'document');
             $data['shipments'] = $shipments;
-            foreach ($data['shipments'] as $key => $shipment) {
-                foreach ($shipment->document as $document) {
-                    if ($document->status == 'done') {
-                        $data['shipments'][$key]['done'] = true;
-                    } else {
-                        $data['shipments'][$key]['done'] = false;
-                    }
-                }
-            }
             return view('web.shipment.list', $data);
         } catch (\Throwable $th) {
             abort(404);
@@ -54,22 +45,31 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $shipment = $this->shipmentService->find($result['id']);
+            if (!$shipment) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Shipment ID không tồn tại',
+                ], 400);
+            }
+
             $filterDocument = [
-                'shipment_id' => $result['id'],
+                'shipment_id' => $shipment->id,
                 'get' => true,
             ];
             $documents = $this->documentService->filter($filterDocument);
-            if ($documents->count() > 0) {
+
+            if ($shipment->status == 'done' || $documents->count() > 0) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Đã có số chứng từ liên quan đến Shipment ID này, không thể xóa!',
+                    'message' => 'Đã có Số chứng từ liên quan đến Shipment ID này, không thể xóa!',
                 ], 400);
             } else {
-                $shipment = $this->shipmentService->delete($result['id']);
-                if ($shipment != false) {
+                $deleteShipment = $this->shipmentService->delete($shipment->id);
+                if ($deleteShipment != false) {
                     return response()->json([
                         'status' => 'success',
-                        'message' => 'Xóa mã Shipment ID thành công',
+                        'message' => 'Xóa Shipment ID thành công',
                     ], 200);
                 } else {
                     return response()->json([
@@ -82,7 +82,7 @@ class ShipmentController extends Controller
             Log::error('ShipmentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Xóa mã sản phẩm thất bại',
+                'message' => 'Xóa Shipment ID thất bại',
             ], 400);
         }
     }

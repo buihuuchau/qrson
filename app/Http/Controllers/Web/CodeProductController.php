@@ -72,9 +72,17 @@ class CodeProductController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $codeProductTemp = $this->codeProductTempService->find($result['id']);
+            if (!$codeProductTemp) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Mã sản phẩm không tồn tại',
+                ], 400);
+            }
+
             DB::beginTransaction();
             $filterCodeProduct = [
-                'id' => $result['id'],
+                'id' => $codeProductTemp->id,
                 'get' => 'first',
             ];
             $codeProductTemp = $this->codeProductTempService->filter($filterCodeProduct, 'document');

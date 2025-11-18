@@ -55,6 +55,14 @@ class DocumentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $document = $this->documentService->find($result['id']);
+            if (!$document) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Số chứng từ không tồn tại',
+                ], 400);
+            }
+
             DB::beginTransaction();
             $checkCodeProductTemp = true;
             $filterCodeProductTemp = [
