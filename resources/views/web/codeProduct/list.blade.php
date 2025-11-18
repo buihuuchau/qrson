@@ -92,11 +92,9 @@
                                                 </td>
                                                 @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
                                                     <td>
-
                                                         <button class="btn btn-danger clearCodeProduct"
-                                                            value="{{ $codeProduct->id }}"><i
+                                                            title="Xóa" value="{{ $codeProduct->id }}"><i
                                                                 class="fas fa-trash"></i></button>
-
                                                     </td>
                                                 @endif
                                             </tr>

@@ -59,10 +59,8 @@
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
                                                         <i class="fas fa-file-export"></i>
                                                     </a>
-                                                    <a id="clearShipment" class="btn btn-danger" title="Xóa"
-                                                        href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
+                                                    <button class="btn btn-danger clearShipment" title="Xóa"
+                                                        value="{{ $shipment->id }}"><i class="fas fa-trash"></i></button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -90,5 +88,55 @@
     </div>
 @endsection
 @section('custom_script')
-    {{-- custom-script --}}
+    <script>
+        $('.clearShipment').click(function(e) {
+            e.preventDefault();
+            let btn = $(this);
+            let id = $(this).val();
+            Swal.fire({
+                title: "Xác nhận xóa?",
+                text: "Shipment ID:  " + id + " sẽ bị xóa và không thể khôi phục!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Xóa",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('web.shipment.delete') }}",
+                        data: {
+                            id: id,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            let message = response && response.message ? response.message :
+                                'Xóa Shipment ID thành công';
+                            Swal.fire({
+                                icon: "success",
+                                title: "Thành công",
+                                text: message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            btn.closest('tr').remove();
+                        },
+                        error: function(xhr, status, error) {
+                            let message = xhr.responseJSON && xhr.responseJSON.message ?
+                                xhr.responseJSON.message :
+                                'Đã có lỗi xảy ra';
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi",
+                                text: message,
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection
