@@ -14,9 +14,11 @@ class Document extends Model
     protected $keyType = 'string'; // id là string
 
     protected $fillable = [
+        'id',
         'shipment_id',
         'total_current',
         'total',
+        'status',
     ];
 
     public function shipment()

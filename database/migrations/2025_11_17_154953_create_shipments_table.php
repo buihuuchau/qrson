@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('shipments', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->enum('status', ['pending', 'done'])->default('pending');
             $table->timestamps();
         });
     }

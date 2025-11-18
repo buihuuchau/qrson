@@ -62,8 +62,9 @@
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
                                             <th>Mã sản phẩm</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian quét</th>
+                                            <th>Người thực hiện</th>
+                                            <th>Thực hiện manual</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -74,7 +75,12 @@
                                                 <td>{{ $codeProduct->document_id }}</td>
                                                 <td>{{ $codeProduct->id }}</td>
                                                 <td>{{ $codeProduct->created_at }}</td>
-                                                <td>{{ $codeProduct->updated_at }}</td>
+                                                <td>{{ $codeProduct->user->name }} - {{ $codeProduct->user->phone }}</td>
+                                                <td>
+                                                    @if ($codeProduct->scan == 'no')
+                                                        X
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -84,8 +90,9 @@
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
                                             <th>Mã sản phẩm</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian quét</th>
+                                            <th>Người thực hiện</th>
+                                            <th>Thực hiện manual</th>
                                         </tr>
                                     </tfoot>
                                 </table>

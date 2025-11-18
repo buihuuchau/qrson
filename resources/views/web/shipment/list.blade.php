@@ -40,8 +40,7 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian quét</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
@@ -51,14 +50,19 @@
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $shipment->id }}</td>
                                                 <td>{{ $shipment->created_at }}</td>
-                                                <td>{{ $shipment->updated_at }}</td>
                                                 <td>
-                                                    <a
+                                                    <a class="btn btn-primary" title="Chi tiết"
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a href=""><i class="fas fa-file-export"></i></a>
+                                                    <a class="btn btn-success" title="Xuất file"
+                                                        href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
+                                                        <i class="fas fa-file-export"></i>
+                                                    </a>
+                                                    <a id="clearShipment" class="btn btn-danger" title="Xóa"
+                                                        href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -67,8 +71,7 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian quét</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </tfoot>

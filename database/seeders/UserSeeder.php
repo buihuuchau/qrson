@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'phone' => '0000000000',
             'password' => bcrypt('adminpassword'),
+            'name' => 'Tên Admin',
             'role' => 'admin',
             'created_at' => now(),
             'updated_at' => now(),
@@ -24,6 +25,7 @@ class UserSeeder extends Seeder
             DB::table('users')->insert([
                 'phone' => '000000000' . $i,
                 'password' => bcrypt('userpassword'),
+                'name' => 'Tên User ' . $i,
                 'role' => 'user',
                 'created_at' => now(),
                 'updated_at' => now(),

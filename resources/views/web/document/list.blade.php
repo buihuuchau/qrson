@@ -49,8 +49,7 @@
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
                                             <th>Số mã tất cả</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian nhập</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
@@ -63,11 +62,14 @@
                                                 <td>{{ $document->total_current }}</td>
                                                 <td>{{ $document->total }}</td>
                                                 <td>{{ $document->created_at }}</td>
-                                                <td>{{ $document->updated_at }}</td>
                                                 <td>
-                                                    <a
+                                                    <a class="btn btn-primary" title="Chi tiết"
                                                         href="{{ route('web.code-product.list', ['shipment_id' => $document->shipment_id, 'document_id' => $document->id]) }}">
                                                         <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a id="clearDocument" class="btn btn-danger" title="Xóa"
+                                                        href="">
+                                                        <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -80,8 +82,7 @@
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
                                             <th>Số mã tất cả</th>
-                                            <th>Thời gian tạo</th>
-                                            <th>Thời gian chỉnh sửa</th>
+                                            <th>Thời gian nhập</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </tfoot>

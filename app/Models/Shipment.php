@@ -14,7 +14,7 @@ class Shipment extends Model
     protected $keyType = 'string'; // id là string
 
     protected $fillable = [
-        'status',
+        'id',
     ];
 
     public function documents()

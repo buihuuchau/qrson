@@ -50,9 +50,9 @@ class CodeProductController extends Controller
                 'get' => true,
             ];
             if (!empty($document) && $document->total_current != $document->total) {
-                $codeProducts = $this->codeProductTempService->filter($filterCodeProduct);
+                $codeProducts = $this->codeProductTempService->filter($filterCodeProduct, 'user');
             } else {
-                $codeProducts = $this->codeProductService->filter($filterCodeProduct);
+                $codeProducts = $this->codeProductService->filter($filterCodeProduct, 'user');
             }
             $data['codeProducts'] = $codeProducts;
             $data['shipment_id'] = $shipment_id;

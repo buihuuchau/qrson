@@ -14,8 +14,10 @@ class CodeProduct extends Model
     protected $keyType = 'string'; // id là string
 
     protected $fillable = [
+        'id',
         'shipment_id',
         'document_id',
+        'user_id',
     ];
 
     public function document()

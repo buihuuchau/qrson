@@ -18,6 +18,7 @@ class DocumentSeeder extends Seeder
             'shipment_id' => '5100054985',
             'total_current' => 1,
             'total' => 3,
+            'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -27,6 +28,7 @@ class DocumentSeeder extends Seeder
                 'shipment_id' => '5100054985',
                 'total_current' => 0,
                 'total' => 0,
+                'status' => 'pending',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

@@ -17,8 +17,21 @@ class CodeProductTempSeeder extends Seeder
             'id' => 'n92500000000000000000000000',
             'shipment_id' => '5100054985',
             'document_id' => '5002756032',
+            'user_id' => 2,
+            'scan' => 'yes',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        for ($i = 1; $i <= 2; $i++) {
+            DB::table('code_product_temps')->insert([
+                'id' => 'n9250000000000000000000000' . $i,
+                'shipment_id' => '5100054985',
+                'document_id' => '5002756032',
+                'user_id' => 2,
+                'scan' => 'no',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
