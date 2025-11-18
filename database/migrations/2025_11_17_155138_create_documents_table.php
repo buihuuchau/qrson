@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('phone');
-            $table->string('password');
-            $table->enum('role', ['admin', 'user'])->default('user');
+        Schema::create('documents', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('shipment_id');
+            $table->unsignedSmallInteger('total_current')->default(0);
+            $table->unsignedSmallInteger('total')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('documents');
     }
 };
