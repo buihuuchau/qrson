@@ -59,8 +59,12 @@
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
                                                         <i class="fas fa-file-export"></i>
                                                     </a>
-                                                    <button class="btn btn-danger clearShipment" title="Xóa"
-                                                        value="{{ $shipment->id }}"><i class="fas fa-trash"></i></button>
+                                                    @if ($shipment->done == false)
+                                                        <button class="btn btn-danger clearShipment" title="Xóa"
+                                                            value="{{ $shipment->id }}"><i
+                                                                class="fas fa-trash"></i></button>
+                                                    @endif
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -124,7 +128,7 @@
                                 timer: 1500
                             });
                             btn.closest('tr').remove();
-                            $("#example1 tbody tr").each(function(index){
+                            $("#example1 tbody tr").each(function(index) {
                                 $(this).find("td:first").text(index + 1);
                             });
                         },

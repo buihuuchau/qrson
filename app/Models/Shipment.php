@@ -17,13 +17,18 @@ class Shipment extends Model
         'id',
     ];
 
-    public function documents()
+    public function document()
     {
         return $this->hasMany(Document::class, 'shipment_id', 'id');
     }
 
-    public function codeProducts()
+    public function codeProduct()
     {
         return $this->hasManyThrough(CodeProduct::class, Document::class, 'shipment_id', 'document_id', 'id', 'id');
+    }
+
+    public function codeProductTemp()
+    {
+        return $this->hasManyThrough(CodeProductTemp::class, Document::class, 'shipment_id', 'document_id', 'id', 'id');
     }
 }

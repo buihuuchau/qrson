@@ -29,8 +29,17 @@ class ShipmentController extends Controller
                 'orderBy' => 'created_at',
                 'get' => true,
             ];
-            $shipments = $this->shipmentService->filter($filterShipment);
+            $shipments = $this->shipmentService->filter($filterShipment, 'document');
             $data['shipments'] = $shipments;
+            foreach ($data['shipments'] as $key => $shipment) {
+                foreach ($shipment->document as $document) {
+                    if ($document->status == 'done') {
+                        $data['shipments'][$key]['done'] = true;
+                    } else {
+                        $data['shipments'][$key]['done'] = false;
+                    }
+                }
+            }
             return view('web.shipment.list', $data);
         } catch (\Throwable $th) {
             abort(404);

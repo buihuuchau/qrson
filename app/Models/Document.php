@@ -26,8 +26,13 @@ class Document extends Model
         return $this->belongsTo(Shipment::class, 'shipment_id', 'id');
     }
 
-    public function codeProducts()
+    public function codeProduct()
     {
         return $this->hasMany(CodeProduct::class, 'document_id', 'id');
+    }
+
+    public function codeProductTemp()
+    {
+        return $this->hasMany(CodeProductTemp::class, 'document_id', 'id');
     }
 }

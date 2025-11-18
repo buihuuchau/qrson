@@ -22,12 +22,12 @@ class User extends Authenticatable
         'role',
     ];
 
-    public function codeProductTemps()
+    public function codeProductTemp()
     {
         return $this->hasMany(CodeProductTemp::class, 'user_id', 'id');
     }
 
-    public function codeProducts()
+    public function codeProduct()
     {
         return $this->hasMany(CodeProduct::class, 'user_id', 'id');
     }
