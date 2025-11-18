@@ -26,6 +26,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/shipment-delete', [App\Http\Controllers\Web\ShipmentController::class, 'delete'])->name('web.shipment.delete');
 
         Route::get('/document-list', [App\Http\Controllers\Web\DocumentController::class, 'list'])->name('web.document.list');
+        Route::post('/document-delete', [App\Http\Controllers\Web\DocumentController::class, 'delete'])->name('web.document.delete');
 
         Route::get('/code-product-list', [App\Http\Controllers\Web\CodeProductController::class, 'list'])->name('web.code-product.list');
         Route::post('/code-product-delete', [App\Http\Controllers\Web\CodeProductController::class, 'delete'])->name('web.code-product.delete');

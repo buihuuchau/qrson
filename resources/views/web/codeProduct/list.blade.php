@@ -155,7 +155,7 @@
                         dataType: "json",
                         success: function(response) {
                             let message = response && response.message ? response.message :
-                                'Xóa mã sản phẩm thành công';
+                                'Xóa Mã sản phẩm thành công';
                             Swal.fire({
                                 icon: "success",
                                 title: "Thành công",

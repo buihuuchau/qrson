@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
@@ -38,6 +39,41 @@ class DocumentController extends Controller
             return view('web.document.list', $data);
         } catch (\Throwable $th) {
             abort(404);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $acceptFields = [
+                'id',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            DB::beginTransaction();
+            $filterCodeProductTemp = [
+                'document_id' => $result['id'],
+                'get' => true,
+            ];
+            $codeProduct = $this->codeProductTempService->deleteByDocumentId($result['id']);
+            $document = $this->documentService->delete($result['id']);
+            $codeProduct = $this->codeProductTempService->delete($result['id']);
+            if ($codeProduct != false) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Xóa mã sản phẩm thành công',
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Xóa mã sản phẩm thất bại',
+                ], 400);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Xóa mã sản phẩm thất bại',
+            ], 400);
         }
     }
 }
