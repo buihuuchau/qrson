@@ -8,6 +8,8 @@ use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CodeProductController extends Controller
 {
@@ -70,19 +72,36 @@ class CodeProductController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $codeProduct = $this->codeProductTempService->delete($result['id']);
-            if ($codeProduct != false) {
+            DB::beginTransaction();
+            $filterCodeProduct = [
+                'id' => $result['id'],
+                'get' => 'first',
+            ];
+            $codeProductTemp = $this->codeProductTempService->filter($filterCodeProduct, 'document');
+
+            $updateDocument = [
+                'total_current' => $codeProductTemp->document->total_current - 1,
+            ];
+            $document = $this->documentService->update($codeProductTemp->document_id, $updateDocument);
+
+            $deleteCodeProductTemp = $this->codeProductTempService->delete($result['id']);
+
+            if ($document != false && $deleteCodeProductTemp != false) {
+                DB::commit();
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Xóa mã sản phẩm thành công',
                 ], 200);
             } else {
+                DB::rollBack();
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Xóa mã sản phẩm thất bại',
                 ], 400);
             }
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('CodeProductController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Xóa mã sản phẩm thất bại',

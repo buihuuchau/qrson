@@ -7,6 +7,7 @@ use App\Services\DocumentService;
 use App\Services\ShipmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class ShipmentController extends Controller
 {
@@ -69,6 +70,7 @@ class ShipmentController extends Controller
                 }
             }
         } catch (\Throwable $th) {
+            Log::error('ShipmentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Xóa mã sản phẩm thất bại',

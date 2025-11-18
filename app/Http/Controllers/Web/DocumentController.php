@@ -3,19 +3,24 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
     protected $documentService;
+    protected $codeProductTempService;
 
     public function __construct(
         DocumentService $documentService,
+        CodeProductTempService $codeProductTempService
     ) {
         $this->documentService = $documentService;
+        $this->codeProductTempService = $codeProductTempService;
     }
 
     public function list(Request $request)
@@ -51,28 +56,38 @@ class DocumentController extends Controller
             $result = Arr::only(request()->all(), $acceptFields);
 
             DB::beginTransaction();
+            $checkCodeProductTemp = true;
             $filterCodeProductTemp = [
                 'document_id' => $result['id'],
                 'get' => true,
             ];
-            $codeProduct = $this->codeProductTempService->deleteByDocumentId($result['id']);
+            $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
+            foreach ($codeProductTemps as $codeProductTemp) {
+                $codeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
+                if (!$codeProductTemp) {
+                    $checkCodeProductTemp = false;
+                }
+            }
             $document = $this->documentService->delete($result['id']);
-            $codeProduct = $this->codeProductTempService->delete($result['id']);
-            if ($codeProduct != false) {
+            if ($checkCodeProductTemp && $document) {
+                DB::commit();
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Xóa mã sản phẩm thành công',
+                    'message' => 'Xóa Số chứng từ thành công',
                 ], 200);
             } else {
+                DB::rollBack();
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Xóa mã sản phẩm thất bại',
+                    'message' => 'Xóa Số chứng từ thất bại',
                 ], 400);
             }
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('DocumentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Xóa mã sản phẩm thất bại',
+                'message' => 'Xóa Số chứng từ thất bại',
             ], 400);
         }
     }

@@ -115,6 +115,7 @@
         $('.clearDocument').click(function(e) {
             e.preventDefault();
             let btn = $(this);
+            btn.prop('disabled', true);
             let id = $(this).val();
             Swal.fire({
                 title: "Xác nhận xóa?",
@@ -147,6 +148,9 @@
                                 timer: 1500
                             });
                             btn.closest('tr').remove();
+                            $("#example1 tbody tr").each(function(index){
+                                $(this).find("td:first").text(index + 1);
+                            });
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
@@ -157,8 +161,11 @@
                                 title: "Lỗi",
                                 text: message,
                             });
+                            btn.prop('disabled', false);
                         }
                     });
+                } else {
+                    btn.prop('disabled', false);
                 }
             });
         });

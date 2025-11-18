@@ -18,7 +18,7 @@ class ShipmentSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             DB::table('shipments')->insert([
                 'id' => 'SHIPMENT' . $i,
                 'created_at' => now(),
