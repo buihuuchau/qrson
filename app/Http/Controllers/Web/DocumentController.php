@@ -51,11 +51,11 @@ class DocumentController extends Controller
     {
         try {
             $acceptFields = [
-                'id',
+                'document_id',
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $document = $this->documentService->find($result['id']);
+            $document = $this->documentService->find($result['document_id']);
             if (!$document) {
                 return response()->json([
                     'status' => 'error',
@@ -66,7 +66,7 @@ class DocumentController extends Controller
             DB::beginTransaction();
             $checkCodeProductTemp = true;
             $filterCodeProductTemp = [
-                'document_id' => $result['id'],
+                'document_id' => $result['document_id'],
                 'get' => true,
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
@@ -76,7 +76,7 @@ class DocumentController extends Controller
                     $checkCodeProductTemp = false;
                 }
             }
-            $document = $this->documentService->delete($result['id']);
+            $document = $this->documentService->delete($result['document_id']);
             if ($checkCodeProductTemp && $document) {
                 DB::commit();
                 return response()->json([

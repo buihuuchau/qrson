@@ -133,10 +133,10 @@
             e.preventDefault();
             let btn = $(this);
             btn.prop('disabled', true);
-            let id = $(this).val();
+            let code_product_id = $(this).val();
             Swal.fire({
                 title: "Xác nhận xóa?",
-                text: "Mã sản phẩm " + id + " sẽ bị xóa và không thể khôi phục!",
+                text: "Mã sản phẩm " + code_product_id + " sẽ bị xóa và không thể khôi phục!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -149,7 +149,7 @@
                         type: "POST",
                         url: "{{ route('web.code-product.delete') }}",
                         data: {
-                            id: id,
+                            code_product_id: code_product_id,
                             _token: "{{ csrf_token() }}"
                         },
                         dataType: "json",

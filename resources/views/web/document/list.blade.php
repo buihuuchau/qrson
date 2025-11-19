@@ -116,10 +116,10 @@
             e.preventDefault();
             let btn = $(this);
             btn.prop('disabled', true);
-            let id = $(this).val();
+            let document_id = $(this).val();
             Swal.fire({
                 title: "Xác nhận xóa?",
-                text: "Số chứng từ:  " + id +
+                text: "Số chứng từ:  " + document_id +
                     " và các mã sản phẩm đi kèm sẽ bị xóa và không thể khôi phục!",
                 icon: "warning",
                 showCancelButton: true,
@@ -133,7 +133,7 @@
                         type: "POST",
                         url: "{{ route('web.document.delete') }}",
                         data: {
-                            id: id,
+                            document_id: document_id,
                             _token: "{{ csrf_token() }}"
                         },
                         dataType: "json",

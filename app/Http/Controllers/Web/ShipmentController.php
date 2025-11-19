@@ -41,11 +41,11 @@ class ShipmentController extends Controller
     {
         try {
             $acceptFields = [
-                'id',
+                'shipment_id',
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $shipment = $this->shipmentService->find($result['id']);
+            $shipment = $this->shipmentService->find($result['shipment_id']);
             if (!$shipment) {
                 return response()->json([
                     'status' => 'error',

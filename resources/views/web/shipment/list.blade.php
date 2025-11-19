@@ -101,10 +101,10 @@
             e.preventDefault();
             let btn = $(this);
             btn.prop('disabled', true);
-            let id = $(this).val();
+            let shipment_id = $(this).val();
             Swal.fire({
                 title: "Xác nhận xóa?",
-                text: "Shipment ID:  " + id + " sẽ bị xóa và không thể khôi phục!",
+                text: "Shipment ID:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -117,7 +117,7 @@
                         type: "POST",
                         url: "{{ route('web.shipment.delete') }}",
                         data: {
-                            id: id,
+                            shipment_id: shipment_id,
                             _token: "{{ csrf_token() }}"
                         },
                         dataType: "json",

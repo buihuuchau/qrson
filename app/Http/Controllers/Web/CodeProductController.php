@@ -68,11 +68,11 @@ class CodeProductController extends Controller
     {
         try {
             $acceptFields = [
-                'id',
+                'code_product_id',
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $codeProductTemp = $this->codeProductTempService->find($result['id']);
+            $codeProductTemp = $this->codeProductTempService->find($result['code_product_id']);
             if (!$codeProductTemp) {
                 return response()->json([
                     'status' => 'error',
@@ -92,7 +92,7 @@ class CodeProductController extends Controller
             ];
             $document = $this->documentService->update($codeProductTemp->document_id, $updateDocument);
 
-            $deleteCodeProductTemp = $this->codeProductTempService->delete($result['id']);
+            $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
 
             if ($document != false && $deleteCodeProductTemp != false) {
                 DB::commit();
