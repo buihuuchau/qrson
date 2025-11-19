@@ -17,3 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/post-login', [App\Http\Controllers\Apk\LoginController::class, 'postLogin']);
+Route::prefix('user')->group(function () {
+    Route::middleware(['auth:api', 'roleUser'])->group(function () {
+        Route::get('/logout', [App\Http\Controllers\Apk\LoginController::class, 'logout']);
+    });
+});

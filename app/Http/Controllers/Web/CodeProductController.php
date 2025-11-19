@@ -75,7 +75,8 @@ class CodeProductController extends Controller
             $codeProductTemp = $this->codeProductTempService->find($result['code_product_id']);
             if (!$codeProductTemp) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 400,
                     'message' => 'Mã sản phẩm không tồn tại',
                 ], 400);
             }
@@ -97,23 +98,26 @@ class CodeProductController extends Controller
             if ($document != false && $deleteCodeProductTemp != false) {
                 DB::commit();
                 return response()->json([
-                    'status' => 'success',
+                    'status' => true,
+                    'status_code' => 200,
                     'message' => 'Xóa mã sản phẩm thành công',
                 ], 200);
             } else {
                 DB::rollBack();
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 409,
                     'message' => 'Xóa mã sản phẩm thất bại',
-                ], 400);
+                ], 409);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('CodeProductController delete error: ' . $th->getMessage());
             return response()->json([
-                'status' => 'error',
-                'message' => 'Xóa mã sản phẩm thất bại',
-            ], 400);
+                'status' => false,
+                'status_code' => 500,
+                'messages' => 'Lỗi hệ thống.',
+            ], 500);
         }
     }
 }

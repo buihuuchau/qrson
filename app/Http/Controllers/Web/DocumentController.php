@@ -58,7 +58,8 @@ class DocumentController extends Controller
             $document = $this->documentService->find($result['document_id']);
             if (!$document) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 400,
                     'message' => 'Số chứng từ không tồn tại',
                 ], 400);
             }
@@ -80,23 +81,26 @@ class DocumentController extends Controller
             if ($checkCodeProductTemp && $document) {
                 DB::commit();
                 return response()->json([
-                    'status' => 'success',
+                    'status' => true,
+                    'status_code' => 200,
                     'message' => 'Xóa Số chứng từ thành công',
                 ], 200);
             } else {
                 DB::rollBack();
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 409,
                     'message' => 'Xóa Số chứng từ thất bại',
-                ], 400);
+                ], 409);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('DocumentController delete error: ' . $th->getMessage());
             return response()->json([
-                'status' => 'error',
-                'message' => 'Xóa Số chứng từ thất bại',
-            ], 400);
+                'status' => false,
+                'status_code' => 500,
+                'messages' => 'Lỗi hệ thống.',
+            ], 500);
         }
     }
 }

@@ -34,7 +34,7 @@ class LoginController extends Controller
                 return redirect()->back()->withErrors(['login' => 'Số điện thoại hoặc mật khẩu không đúng. Vui lòng thử lại.'])->withInput();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            return redirect()->back()->withErrors(['login' => 'Số điện thoại hoặc mật khẩu không đúng. Vui lòng thử lại.'])->withInput();
         }
     }
 

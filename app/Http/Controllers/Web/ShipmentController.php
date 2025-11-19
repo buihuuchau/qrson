@@ -48,7 +48,8 @@ class ShipmentController extends Controller
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (!$shipment) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 400,
                     'message' => 'Shipment ID không tồn tại',
                 ], 400);
             }
@@ -61,29 +62,33 @@ class ShipmentController extends Controller
 
             if ($shipment->status == 'done' || $documents->count() > 0) {
                 return response()->json([
-                    'status' => 'error',
+                    'status' => false,
+                    'status_code' => 409,
                     'message' => 'Đã có Số chứng từ liên quan đến Shipment ID này, không thể xóa!',
-                ], 400);
+                ], 409);
             } else {
                 $deleteShipment = $this->shipmentService->delete($shipment->id);
                 if ($deleteShipment != false) {
                     return response()->json([
-                        'status' => 'success',
+                        'status' => true,
+                        'status_code' => 200,
                         'message' => 'Xóa Shipment ID thành công',
                     ], 200);
                 } else {
                     return response()->json([
-                        'status' => 'error',
+                        'status' => false,
+                        'status_code' => 409,
                         'message' => 'Xóa Shipment ID thất bại',
-                    ], 400);
+                    ], 409);
                 }
             }
         } catch (\Throwable $th) {
             Log::error('ShipmentController delete error: ' . $th->getMessage());
             return response()->json([
-                'status' => 'error',
-                'message' => 'Xóa Shipment ID thất bại',
-            ], 400);
+                'status' => false,
+                'status_code' => 500,
+                'messages' => 'Lỗi hệ thống.',
+            ], 500);
         }
     }
 }
