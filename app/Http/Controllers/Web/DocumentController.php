@@ -43,6 +43,7 @@ class DocumentController extends Controller
             $data['documents'] = $documents;
             return view('web.document.list', $data);
         } catch (\Throwable $th) {
+            Log::error('DocumentController list error: ' . $th->getMessage());
             abort(404);
         }
     }

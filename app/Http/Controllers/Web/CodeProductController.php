@@ -60,6 +60,7 @@ class CodeProductController extends Controller
             $data['shipment_id'] = $shipment_id;
             return view('web.codeProduct.list', $data);
         } catch (\Throwable $th) {
+            Log::error('CodeProductController list error: ' . $th->getMessage());
             abort(404);
         }
     }

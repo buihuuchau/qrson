@@ -22,5 +22,9 @@ Route::post('/post-login', [App\Http\Controllers\Apk\LoginController::class, 'po
 Route::prefix('user')->group(function () {
     Route::middleware(['auth:api', 'roleUser'])->group(function () {
         Route::get('/logout', [App\Http\Controllers\Apk\LoginController::class, 'logout']);
+
+        Route::get('/shipment-check', [App\Http\Controllers\Apk\ShipmentController::class, 'check']);
+        Route::post('/shipment-add', [App\Http\Controllers\Apk\ShipmentController::class, 'add']);
+        Route::post('/shipment-delete', [App\Http\Controllers\Apk\ShipmentController::class, 'delete']);
     });
 });

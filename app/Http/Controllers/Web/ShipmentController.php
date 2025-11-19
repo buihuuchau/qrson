@@ -33,6 +33,7 @@ class ShipmentController extends Controller
             $data['shipments'] = $shipments;
             return view('web.shipment.list', $data);
         } catch (\Throwable $th) {
+            Log::error('ShipmentController list error: ' . $th->getMessage());
             abort(404);
         }
     }
