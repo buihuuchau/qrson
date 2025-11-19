@@ -50,21 +50,25 @@
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $shipment->id }}</td>
                                                 <td>{{ $shipment->created_at }}</td>
-                                                <td>
-                                                    <a class="btn btn-primary" title="Chi tiết"
+                                                <td class="d-flex">
+                                                    <a class="btn btn-primary mr-5" title="Chi tiết"
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a class="btn btn-success" title="Xuất file"
-                                                        href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
-                                                        <i class="fas fa-file-export"></i>
-                                                    </a>
+                                                    <form class="mr-5" action="{{ route('web.shipment.export') }}"
+                                                        method="post">
+                                                        @csrf
+                                                        <input type="hidden" name="shipment_id"
+                                                            value="{{ $shipment->id }}">
+                                                        <button class="btn btn-success" type="submit" title="Xuất file">
+                                                            <i class="fas fa-file-export"></i>
+                                                        </button>
+                                                    </form>
                                                     @if ($shipment->status == 'pending' && $shipment->document->count() == 0)
                                                         <button class="btn btn-danger clearShipment" title="Xóa"
                                                             value="{{ $shipment->id }}"><i
                                                                 class="fas fa-trash"></i></button>
                                                     @endif
-
                                                 </td>
                                             </tr>
                                         @endforeach

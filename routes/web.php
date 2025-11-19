@@ -23,6 +23,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/logout', [App\Http\Controllers\Web\LoginController::class, 'logout'])->name('web.logout');
 
         Route::get('/shipment-list', [App\Http\Controllers\Web\ShipmentController::class, 'list'])->name('web.shipment.list');
+        Route::post('/shipment-export', [App\Http\Controllers\Web\ShipmentExportController::class, 'exportShipment'])->name('web.shipment.export');
         Route::post('/shipment-delete', [App\Http\Controllers\Web\ShipmentController::class, 'delete'])->name('web.shipment.delete');
 
         Route::get('/document-list', [App\Http\Controllers\Web\DocumentController::class, 'list'])->name('web.document.list');
