@@ -76,14 +76,8 @@
                                                 <td>{{ $codeProduct->shipment_id }}</td>
                                                 <td>{{ $codeProduct->document_id }}</td>
                                                 <td>{{ $codeProduct->id }}</td>
+                                                <td>{{ $codeProduct->created_by }}</td>
                                                 <td>{{ $codeProduct->created_at }}</td>
-                                                <td>
-                                                    @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
-                                                        {{ $codeProduct->user->name }} - {{ $codeProduct->user->phone }}
-                                                    @else
-                                                        {{ $codeProduct->created_by }}
-                                                    @endif
-                                                </td>
                                                 <td>
                                                     @if ($codeProduct->scan == 'no')
                                                         X

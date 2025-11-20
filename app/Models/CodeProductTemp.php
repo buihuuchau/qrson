@@ -17,7 +17,7 @@ class CodeProductTemp extends Model
         'id',
         'shipment_id',
         'document_id',
-        'user_id',
+        'created_by',
     ];
 
     public function document()
@@ -28,10 +28,5 @@ class CodeProductTemp extends Model
     public function shipment()
     {
         return $this->belongsTo(Shipment::class, 'shipment_id', 'id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

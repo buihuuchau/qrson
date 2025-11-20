@@ -40,6 +40,7 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
+                                            <th>Người quét</th>
                                             <th>Thời gian quét</th>
                                             <th>Thao tác</th>
                                         </tr>
@@ -49,6 +50,7 @@
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
                                                 <td>{{ $shipment->id }}</td>
+                                                <td>{{ $shipment->created_by }}</td>
                                                 <td>{{ $shipment->created_at }}</td>
                                                 <td class="d-flex">
                                                     <a class="btn btn-primary mr-5" title="Chi tiết"
@@ -77,6 +79,7 @@
                                         <tr>
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
+                                            <th>Người quét</th>
                                             <th>Thời gian quét</th>
                                             <th>Thao tác</th>
                                         </tr>

@@ -49,6 +49,7 @@
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
                                             <th>Số mã tất cả</th>
+                                            <th>Người nhập</th>
                                             <th>Thời gian nhập</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>
@@ -62,6 +63,7 @@
                                                 <td>{{ $document->id }}</td>
                                                 <td>{{ $document->total_current }}</td>
                                                 <td>{{ $document->total }}</td>
+                                                <td>{{ $document->created_by }}</td>
                                                 <td>{{ $document->created_at }}</td>
                                                 <td>
                                                     @if ($document->status == 'pending')
@@ -91,6 +93,7 @@
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã quét</th>
                                             <th>Số mã tất cả</th>
+                                            <th>Người nhập</th>
                                             <th>Thời gian nhập</th>
                                             <th>Trạng thái</th>
                                             <th>Thao tác</th>

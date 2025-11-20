@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('id')->primary();
             $table->string('shipment_id');
             $table->string('document_id');
-            $table->string('created_by');
             $table->enum('scan', ['yes', 'no'])->default('yes');
+            $table->string('created_by');
             $table->timestamps();
         });
     }

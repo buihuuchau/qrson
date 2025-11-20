@@ -19,6 +19,7 @@ class Document extends Model
         'total_current',
         'total',
         'status',
+        'created_by',
     ];
 
     public function shipment()

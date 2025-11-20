@@ -28,8 +28,8 @@ class CodeProductTempSeeder extends Seeder
                 'id' => 'CODE_PRODUCT_' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
-                'user_id' => 3,
                 'scan' => 'yes',
+                'created_by' => 'Tên User 2 - 0000000002',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -39,8 +39,8 @@ class CodeProductTempSeeder extends Seeder
                 'id' => 'CODE_PRODUCT_' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
-                'user_id' => 3,
                 'scan' => 'no',
+                'created_by' => 'Tên User 3 - 0000000003',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

@@ -16,6 +16,7 @@ class Shipment extends Model
     protected $fillable = [
         'id',
         'status',
+        'created_by',
     ];
 
     public function document()

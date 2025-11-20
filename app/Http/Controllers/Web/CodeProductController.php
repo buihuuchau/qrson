@@ -52,7 +52,7 @@ class CodeProductController extends Controller
                 'get' => true,
             ];
             if (!empty($document) && $document->total_current != $document->total) {
-                $codeProducts = $this->codeProductTempService->filter($filterCodeProduct, 'user');
+                $codeProducts = $this->codeProductTempService->filter($filterCodeProduct);
             } else {
                 $codeProducts = $this->codeProductService->filter($filterCodeProduct);
             }
