@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Apk;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\shipmentConfirmRequest;
 use App\Http\Requests\shipmentRequest;
+use App\Services\CodeProductService;
+use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use App\Services\ShipmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,13 +20,19 @@ class ShipmentController extends Controller
 {
     protected $shipmentService;
     protected $documentService;
+    protected $codeProductTempService;
+    protected $codeProductService;
 
     public function __construct(
         ShipmentService $shipmentService,
-        DocumentService $documentService
+        DocumentService $documentService,
+        CodeProductTempService $codeProductTempService,
+        CodeProductService $codeProductService,
     ) {
         $this->shipmentService = $shipmentService;
         $this->documentService = $documentService;
+        $this->codeProductTempService = $codeProductTempService;
+        $this->codeProductService = $codeProductService;
     }
 
     public function check(Request $request)
@@ -105,7 +115,7 @@ class ShipmentController extends Controller
                         'status_code' => 201,
                         'message' => 'Tạo mới Shipment ID thành công.',
                         'data' => [
-                            'shipment' => $addShipment,
+                            'shipment' => $createShipment,
                         ],
                     ], 201);
                 } else {
@@ -188,6 +198,144 @@ class ShipmentController extends Controller
             }
         } catch (\Throwable $th) {
             Log::error('ShipmentController delete error: ' . $th->getMessage());
+            return response()->json([
+                'status' => false,
+                'status_code' => 500,
+                'messages' => 'Lỗi hệ thống.',
+            ], 500);
+        }
+    }
+
+    public function confirm(Request $request)
+    {
+        try {
+            $acceptFields = [
+                'shipment_id',
+                'document_id',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $validator = Validator::make($result, (new shipmentConfirmRequest())->rules(), (new shipmentConfirmRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
+            $shipment = $this->shipmentService->find($result['shipment_id']);
+            if (empty($shipment)) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 404,
+                    'message' => 'Shipment ID không tồn tại. Vui lòng kiểm tra lại!',
+                ], 404);
+            }
+
+            $document = $this->documentService->find($result['document_id']);
+            if (empty($document)) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 404,
+                    'message' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
+                ], 404);
+            } elseif ($document->shipment_id != $shipment->id) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!',
+                ], 409);
+            } elseif ($document->status == 'done') {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!',
+                ], 409);
+            }
+
+            $filterCodeProductTemp = [
+                'shipment_id' => $shipment->id,
+                'document_id' => $document->id,
+                'get' => true,
+            ];
+            $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
+            if ($document->total_current != $document->total || count($codeProductTemps) != $document->total) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Số lượng Mã sản phẩm không khớp, chưa thể xác nhận lưu!',
+                ], 409);
+            }
+
+            DB::beginTransaction();
+            $checkCreateCodeProduct = true;
+            $checkDeleteCodeProductTemp = true;
+            foreach ($codeProductTemps as $key => $codeProductTemp) {
+                $valueCreateCodeProduct = [
+                    'id' => $codeProductTemp->id,
+                    'shipment_id' => $codeProductTemp->shipment_id,
+                    'document_id' => $codeProductTemp->document_id,
+                    'scan' => $codeProductTemp->scan,
+                    'created_by' => $codeProductTemp->created_by,
+                    'created_at' => $codeProductTemp->created_at,
+                ];
+                $createCodeProduct = $this->codeProductService->create($valueCreateCodeProduct);
+                if (!$createCodeProduct) {
+                    $checkCreateCodeProduct = false;
+                }
+
+                $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
+                if (!$deleteCodeProductTemp) {
+                    $checkDeleteCodeProductTemp = false;
+                }
+            }
+
+            $valueUpdateDocument = [
+                'status' => 'done',
+            ];
+            $updateDocument = $this->documentService->update($document->id, $valueUpdateDocument);
+
+            $checkAllDocumentDone = true;
+            $updateShipment = true;
+            $filterDocument = [
+                'shipment_id' => $shipment->id,
+                'get' => true,
+            ];
+            $documents = $this->documentService->filter($filterDocument);
+            if (!empty($documents) && count($documents) > 0) {
+                foreach ($documents as $document) {
+                    if ($document->status != 'done') {
+                        $checkAllDocumentDone = false;
+                    }
+                }
+                if ($checkAllDocumentDone == true) {
+                    $valueUpdateShipment = [
+                        'status' => 'done',
+                    ];
+                    $updateShipment = $this->shipmentService->update($shipment->id, $valueUpdateShipment);
+                }
+            }
+
+            if ($checkCreateCodeProduct && $checkDeleteCodeProductTemp && $updateDocument && $updateShipment) {
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 201,
+                    'messages' => 'Xác nhận đã lưu các Mã sản phẩm vào Số chứng từ thành công.',
+                ], 201);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 409,
+                    'messages' => 'Chưa thể lưu các Mã sản phẩm cho Số chứng từ này.',
+                ], 409);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('ShipmentController confirm error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,

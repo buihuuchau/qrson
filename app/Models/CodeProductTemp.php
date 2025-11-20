@@ -17,6 +17,7 @@ class CodeProductTemp extends Model
         'id',
         'shipment_id',
         'document_id',
+        'scan',
         'created_by',
     ];
 

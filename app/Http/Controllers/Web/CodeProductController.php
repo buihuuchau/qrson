@@ -66,7 +66,7 @@ class CodeProductController extends Controller
                     'paginate' => 50,
                 ],
             ];
-            if (!empty($document) && $document->total_current != $document->total) {
+            if (!empty($document) && $document->status != 'done') {
                 $codeProducts = $this->codeProductTempService->filter($filterCodeProduct);
             } else {
                 $codeProducts = $this->codeProductService->filter($filterCodeProduct);

@@ -87,10 +87,17 @@ class CodeProductController extends Controller
                     'status_code' => 409,
                     'message' => 'Số chứng từ đã hoàn tất, không thể thêm mã sản phẩm!',
                 ], 409);
+            } elseif ($document->total_current >= $document->total) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Số lượng Mã sản phẩm đã đạt đến giới hạn của Số chứng từ này, không thể thêm mã sản phẩm!',
+                ], 409);
             }
 
             $codeProductTemp = $this->codeProductTempService->find($result['code_product_id']);
-            if (!empty($codeProductTemp)) {
+            $codeProduct = $this->codeProductService->find($result['code_product_id']);
+            if (!empty($codeProductTemp) || !empty($codeProduct)) {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
@@ -109,7 +116,7 @@ class CodeProductController extends Controller
             $createCodeProductTemp = $this->codeProductTempService->create($valueCreateCodeProductTemp);
 
             $valueUpdateDocument = [
-                'total_current' => $document->total_curent + 1,
+                'total_current' => $document->total_current + 1,
             ];
             $updateDocument = $this->documentService->update($document->id, $valueUpdateDocument);
             if ($createCodeProductTemp && $updateDocument) {

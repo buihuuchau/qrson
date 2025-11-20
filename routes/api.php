@@ -26,6 +26,7 @@ Route::prefix('user')->group(function () {
         Route::get('/shipment-check', [App\Http\Controllers\Apk\ShipmentController::class, 'check']);
         Route::post('/shipment-add', [App\Http\Controllers\Apk\ShipmentController::class, 'add']);
         Route::post('/shipment-delete', [App\Http\Controllers\Apk\ShipmentController::class, 'delete']);
+        Route::post('/shipment-confirm', [App\Http\Controllers\Apk\ShipmentController::class, 'confirm']);
 
         Route::get('/document-check', [App\Http\Controllers\Apk\DocumentController::class, 'check']);
         Route::post('/document-add', [App\Http\Controllers\Apk\DocumentController::class, 'add']);
