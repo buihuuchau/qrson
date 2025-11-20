@@ -49,7 +49,9 @@ class CodeProductController extends Controller
                 'shipment_id' => $shipment_id,
                 'document_id' => $document_id,
                 'orderBy' => 'created_at',
-                'get' => true,
+                'get' => [
+                    'paginate' => 50,
+                ],
             ];
             if (!empty($document) && $document->total_current != $document->total) {
                 $codeProducts = $this->codeProductTempService->filter($filterCodeProduct);

@@ -108,6 +108,9 @@
                                         </tr>
                                     </tfoot>
                                 </table>
+                                <div class="d-flex justify-content-end">
+                                    {{ $codeProducts->appends($_GET)->links('web.layouts.pagination_vi') }}
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -158,7 +161,7 @@
                                 timer: 1500
                             });
                             btn.closest('tr').remove();
-                            $("#example1 tbody tr").each(function(index){
+                            $("#example1 tbody tr").each(function(index) {
                                 $(this).find("td:first").text(index + 1);
                             });
                         },

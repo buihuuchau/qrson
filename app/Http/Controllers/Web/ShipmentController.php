@@ -27,7 +27,9 @@ class ShipmentController extends Controller
         try {
             $filterShipment = [
                 'orderBy' => 'created_at',
-                'get' => true,
+                'get' => [
+                    'paginate' => 50,
+                ],
             ];
             $shipments = $this->shipmentService->filter($filterShipment, 'document');
             $data['shipments'] = $shipments;

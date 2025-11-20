@@ -85,6 +85,9 @@
                                         </tr>
                                     </tfoot>
                                 </table>
+                                <div class="d-flex justify-content-end">
+                                    {{ $shipments->appends($_GET)->links('web.layouts.pagination_vi') }}
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>

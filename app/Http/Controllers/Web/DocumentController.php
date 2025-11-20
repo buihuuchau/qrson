@@ -37,7 +37,9 @@ class DocumentController extends Controller
             $filterDocument = [
                 'shipment_id' => $data['shipment_id'],
                 'orderBy' => 'created_at',
-                'get' => true,
+                'get' => [
+                    'paginate' => 50,
+                ],
             ];
             $documents = $this->documentService->filter($filterDocument);
             $data['documents'] = $documents;
