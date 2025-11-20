@@ -104,14 +104,14 @@ class CodeProductController extends Controller
             ];
             $codeProductTemp = $this->codeProductTempService->filter($filterCodeProduct, 'document');
 
-            $updateDocument = [
+            $valueUpdateDocument = [
                 'total_current' => $codeProductTemp->document->total_current - 1,
             ];
-            $editdocument = $this->documentService->update($codeProductTemp->document_id, $updateDocument);
+            $updateDocument = $this->documentService->update($codeProductTemp->document_id, $valueUpdateDocument);
 
             $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
 
-            if ($editdocument && $deleteCodeProductTemp) {
+            if ($updateDocument && $deleteCodeProductTemp) {
                 DB::commit();
                 return response()->json([
                     'status' => true,

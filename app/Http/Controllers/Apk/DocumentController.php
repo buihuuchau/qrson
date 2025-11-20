@@ -140,7 +140,7 @@ class DocumentController extends Controller
             }
 
             DB::beginTransaction();
-            $createDocument = [
+            $valueCreateDocument = [
                 'id' => $result['document_id'],
                 'shipment_id' => $shipment->id,
                 'total_current' => 0,
@@ -148,20 +148,20 @@ class DocumentController extends Controller
                 'status' => 'pending',
                 'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
             ];
-            $addDocument = $this->documentService->create($createDocument);
+            $createDocument = $this->documentService->create($valueCreateDocument);
 
-            $editShipment = [
+            $valueUpdateShipment = [
                 'status' => 'pending',
             ];
-            $updateShipment = $this->shipmentService->update($shipment->id, $editShipment);
-            if ($addDocument && $updateShipment) {
+            $updateShipment = $this->shipmentService->update($shipment->id, $valueUpdateShipment);
+            if ($createDocument && $updateShipment) {
                 DB::commit();
                 return response()->json([
                     'status' => true,
                     'status_code' => 201,
                     'message' => 'Tạo mới Số chứng từ thành công.',
                     'data' => [
-                        'document' => $addDocument,
+                        'document' => $createDocument,
                     ],
                 ], 201);
             } else {
@@ -224,8 +224,8 @@ class DocumentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
             foreach ($codeProductTemps as $codeProductTemp) {
-                $codeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
-                if (!$codeProductTemp) {
+                $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
+                if (!$deleteCodeProductTemp) {
                     $checkCodeProductTemp = false;
                 }
             }
@@ -233,7 +233,7 @@ class DocumentController extends Controller
             $deleteDocument = $this->documentService->delete($document->id);
 
             $checkAllDocumentDone = true;
-            $editShipment = true;
+            $updateShipment = true;
             $filterDocument = [
                 'shipment_id' => $deleteDocument->shipment_id,
                 'get' => true,
@@ -246,14 +246,14 @@ class DocumentController extends Controller
                     }
                 }
                 if ($checkAllDocumentDone == true) {
-                    $updateShipment = [
+                    $valueUpdateShipment = [
                         'status' => 'done',
                     ];
-                    $editShipment = $this->shipmentService->update($deleteDocument->shipment_id, $updateShipment);
+                    $updateShipment = $this->shipmentService->update($deleteDocument->shipment_id, $valueUpdateShipment);
                 }
             }
 
-            if ($checkCodeProductTemp && $deleteDocument && $editShipment) {
+            if ($checkCodeProductTemp && $deleteDocument && $updateShipment) {
                 DB::commit();
                 return response()->json([
                     'status' => true,

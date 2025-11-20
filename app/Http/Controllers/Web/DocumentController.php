@@ -94,8 +94,8 @@ class DocumentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
             foreach ($codeProductTemps as $codeProductTemp) {
-                $codeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
-                if (!$codeProductTemp) {
+                $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
+                if (!$deleteCodeProductTemp) {
                     $checkCodeProductTemp = false;
                 }
             }
@@ -103,7 +103,7 @@ class DocumentController extends Controller
             $deleteDocument = $this->documentService->delete($document->id);
 
             $checkAllDocumentDone = true;
-            $checkUpdateShipment = true;
+            $updateShipment = true;
             $filterDocument = [
                 'shipment_id' => $deleteDocument->shipment_id,
                 'get' => true,
@@ -116,17 +116,14 @@ class DocumentController extends Controller
                     }
                 }
                 if ($checkAllDocumentDone == true) {
-                    $editShipment = [
+                    $valueUpdateShipment = [
                         'status' => 'done',
                     ];
-                    $updateShipment = $this->shipmentService->update($deleteDocument->shipment_id, $editShipment);
-                    if (!$updateShipment) {
-                        $checkUpdateShipment = false;
-                    }
+                    $updateShipment = $this->shipmentService->update($deleteDocument->shipment_id, $valueUpdateShipment);
                 }
             }
 
-            if ($checkCodeProductTemp && $deleteDocument && $checkUpdateShipment) {
+            if ($checkCodeProductTemp && $deleteDocument && $updateShipment) {
                 DB::commit();
                 return response()->json([
                     'status' => true,

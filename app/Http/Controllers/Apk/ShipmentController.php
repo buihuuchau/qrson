@@ -93,13 +93,13 @@ class ShipmentController extends Controller
                     'message' => 'Shipment ID đã tồn tại, không thể tạo mới!',
                 ], 409);
             } else {
-                $createShipment = [
+                $valueCreateShipment = [
                     'id' => $result['shipment_id'],
                     'status' => 'pending',
                     'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
                 ];
-                $addShipment = $this->shipmentService->create($createShipment);
-                if ($addShipment) {
+                $createShipment = $this->shipmentService->create($valueCreateShipment);
+                if ($createShipment) {
                     return response()->json([
                         'status' => true,
                         'status_code' => 201,
@@ -151,9 +151,7 @@ class ShipmentController extends Controller
                     'status_code' => 404,
                     'message' => 'Shipment ID không tồn tại.',
                 ], 404);
-            }
-
-            if ($shipment->status == 'done') {
+            } elseif ($shipment->status == 'done') {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
