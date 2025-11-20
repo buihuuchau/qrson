@@ -80,7 +80,7 @@ class DocumentController extends Controller
             DB::beginTransaction();
             $checkCodeProductTemp = true;
             $filterCodeProductTemp = [
-                'document_id' => $result['document_id'],
+                'document_id' => $document->id,
                 'get' => true,
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
@@ -91,7 +91,7 @@ class DocumentController extends Controller
                 }
             }
 
-            $deleteDocument = $this->documentService->delete($result['document_id']);
+            $deleteDocument = $this->documentService->delete($document->id);
 
             $checkAllDocumentDone = true;
             $checkUpdateShipment = true;
@@ -100,7 +100,7 @@ class DocumentController extends Controller
                 'get' => true,
             ];
             $documents = $this->documentService->filter($filterDocument);
-            if (!empty($documents)) {
+            if (!empty($documents) && count($documents) > 0) {
                 foreach ($documents as $document) {
                     if ($document->status != 'done') {
                         $checkAllDocumentDone = false;

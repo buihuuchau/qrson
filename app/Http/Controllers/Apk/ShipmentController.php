@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Apk;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\shipmentRequest;
 use App\Services\DocumentService;
 use App\Services\ShipmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ShipmentController extends Controller
 {
@@ -34,14 +36,15 @@ class ShipmentController extends Controller
             $shipment = $this->shipmentService->find($result['shipment_id']);
 
             if (!empty($shipment)) {
-                $documents = $this->documentService->filter([
+                $filterDocument = [
                     'shipment_id' => $shipment->id,
                     'get' => true,
-                ]);
+                ];
+                $documents = $this->documentService->filter($filterDocument);
                 return response()->json([
                     'status' => true,
                     'status_code' => 200,
-                    'message' => 'Shipment ID đã được tạo trước đó',
+                    'message' => 'Shipment ID đã được tạo trước đó.',
                     'data' => [
                         'shipment' => $shipment,
                         'documents' => $documents,
@@ -72,6 +75,16 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $validator = Validator::make($result, (new shipmentRequest())->rules(), (new shipmentRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
             $checkShipment = $this->shipmentService->find($result['shipment_id']);
             if (!empty($checkShipment)) {
                 return response()->json([
@@ -80,25 +93,26 @@ class ShipmentController extends Controller
                     'message' => 'Shipment ID đã tồn tại, không thể tạo mới!',
                 ], 409);
             } else {
-                $shipment = $this->shipmentService->create([
+                $createShipment = [
                     'id' => $result['shipment_id'],
                     'status' => 'pending',
                     'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
-                ]);
-                if ($shipment) {
+                ];
+                $addShipment = $this->shipmentService->create($createShipment);
+                if ($addShipment) {
                     return response()->json([
                         'status' => true,
                         'status_code' => 201,
-                        'message' => 'Tạo mới Shipment ID thành công',
+                        'message' => 'Tạo mới Shipment ID thành công.',
                         'data' => [
-                            'shipment' => $shipment,
+                            'shipment' => $addShipment,
                         ],
                     ], 201);
                 } else {
                     return response()->json([
                         'status' => false,
                         'status_code' => 409,
-                        'message' => 'Tạo mới Shipment ID thất bại',
+                        'message' => 'Tạo mới Shipment ID thất bại.',
                     ], 409);
                 }
             }
@@ -120,13 +134,31 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $validator = Validator::make($result, (new shipmentRequest())->rules(), (new shipmentRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (!$shipment) {
                 return response()->json([
                     'status' => false,
-                    'status_code' => 400,
-                    'message' => 'Shipment ID không tồn tại',
-                ], 400);
+                    'status_code' => 404,
+                    'message' => 'Shipment ID không tồn tại.',
+                ], 404);
+            }
+
+            if ($shipment->status == 'done') {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Shipment ID đã hoàn thành, không thể xóa!',
+                ], 409);
             }
 
             $filterDocument = [
@@ -134,8 +166,7 @@ class ShipmentController extends Controller
                 'get' => true,
             ];
             $documents = $this->documentService->filter($filterDocument);
-
-            if ($shipment->status == 'done' || $documents->count() > 0) {
+            if ($documents->count() > 0) {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
@@ -143,17 +174,17 @@ class ShipmentController extends Controller
                 ], 409);
             } else {
                 $deleteShipment = $this->shipmentService->delete($shipment->id);
-                if ($deleteShipment != false) {
+                if ($deleteShipment) {
                     return response()->json([
                         'status' => true,
                         'status_code' => 200,
-                        'message' => 'Xóa Shipment ID thành công',
+                        'message' => 'Xóa Shipment ID thành công.',
                     ], 200);
                 } else {
                     return response()->json([
                         'status' => false,
                         'status_code' => 409,
-                        'message' => 'Xóa Shipment ID thất bại',
+                        'message' => 'Xóa Shipment ID thất bại.',
                     ], 409);
                 }
             }
