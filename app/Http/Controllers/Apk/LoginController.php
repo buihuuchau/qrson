@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
@@ -49,6 +50,7 @@ class LoginController extends Controller
                 ]
             ], 200);
         } catch (\Throwable $th) {
+            Log::error('LoginController postLogin error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
@@ -67,6 +69,7 @@ class LoginController extends Controller
                 'message' => 'Đăng xuất thành công.',
             ], 200);
         } catch (\Throwable $th) {
+            Log::error('LoginController logout error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,

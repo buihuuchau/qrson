@@ -7,6 +7,7 @@ use App\Services\DocumentService;
 use App\Services\ShipmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ShipmentController extends Controller
@@ -82,6 +83,7 @@ class ShipmentController extends Controller
                 $shipment = $this->shipmentService->create([
                     'id' => $result['shipment_id'],
                     'status' => 'pending',
+                    'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
                 ]);
                 if ($shipment) {
                     return response()->json([
