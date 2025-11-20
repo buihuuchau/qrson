@@ -83,7 +83,7 @@
                                                         X
                                                     @endif
                                                 </td>
-                                                @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                                @if ((!empty($shipment_id) || !empty($document)) && $document->status != 'done')
                                                     <td>
                                                         <button class="btn btn-danger clearCodeProduct" title="Xóa"
                                                             value="{{ $codeProduct->id }}"><i

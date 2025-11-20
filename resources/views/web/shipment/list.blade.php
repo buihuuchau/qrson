@@ -42,6 +42,7 @@
                                             <th>Shipment ID</th>
                                             <th>Người quét</th>
                                             <th>Thời gian quét</th>
+                                            <th>Trạng thái</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
@@ -52,6 +53,13 @@
                                                 <td>{{ $shipment->id }}</td>
                                                 <td>{{ $shipment->created_by }}</td>
                                                 <td>{{ $shipment->created_at }}</td>
+                                                <td>
+                                                    @if ($shipment->status == 'pending')
+                                                        Chưa hoàn thành
+                                                    @else
+                                                        Đã hoàn thành
+                                                    @endif
+                                                </td>
                                                 <td class="d-flex">
                                                     <a class="btn btn-primary mr-5" title="Chi tiết"
                                                         href="{{ route('web.document.list', ['shipment_id' => $shipment->id]) }}">
@@ -66,7 +74,7 @@
                                                             <i class="fas fa-file-export"></i>
                                                         </button>
                                                     </form>
-                                                    @if ($shipment->status == 'pending' && $shipment->document->count() == 0)
+                                                    @if ($shipment->status != 'done' && $shipment->document->count() == 0)
                                                         <button class="btn btn-danger clearShipment" title="Xóa"
                                                             value="{{ $shipment->id }}"><i
                                                                 class="fas fa-trash"></i></button>
@@ -81,6 +89,7 @@
                                             <th>Shipment ID</th>
                                             <th>Người quét</th>
                                             <th>Thời gian quét</th>
+                                            <th>Trạng thái</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </tfoot>

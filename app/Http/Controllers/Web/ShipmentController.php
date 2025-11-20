@@ -52,9 +52,9 @@ class ShipmentController extends Controller
             if (!$shipment) {
                 return response()->json([
                     'status' => false,
-                    'status_code' => 400,
+                    'status_code' => 404,
                     'message' => 'Shipment ID không tồn tại',
-                ], 400);
+                ], 404);
             }
 
             $filterDocument = [

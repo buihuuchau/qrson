@@ -77,7 +77,7 @@
                                                         href="{{ route('web.code-product.list', ['shipment_id' => $document->shipment_id, 'document_id' => $document->id]) }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    @if ($document->status == 'pending')
+                                                    @if ($document->status != 'done')
                                                         <button class="btn btn-danger clearDocument" title="Xóa"
                                                             value="{{ $document->id }}"><i
                                                                 class="fas fa-trash"></i></button>

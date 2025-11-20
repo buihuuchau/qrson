@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
+use App\Services\ShipmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -12,13 +13,16 @@ use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
+    protected $shipmentService;
     protected $documentService;
     protected $codeProductTempService;
 
     public function __construct(
+        ShipmentService $shipmentService,
         DocumentService $documentService,
         CodeProductTempService $codeProductTempService
     ) {
+        $this->shipmentService = $shipmentService;
         $this->documentService = $documentService;
         $this->codeProductTempService = $codeProductTempService;
     }
@@ -62,9 +66,15 @@ class DocumentController extends Controller
             if (!$document) {
                 return response()->json([
                     'status' => false,
-                    'status_code' => 400,
+                    'status_code' => 404,
                     'message' => 'Số chứng từ không tồn tại',
-                ], 400);
+                ], 404);
+            } elseif ($document->status == 'done') {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Số chứng từ đã được khóa, không thể xóa',
+                ], 409);
             }
 
             DB::beginTransaction();
@@ -80,8 +90,34 @@ class DocumentController extends Controller
                     $checkCodeProductTemp = false;
                 }
             }
-            $document = $this->documentService->delete($result['document_id']);
-            if ($checkCodeProductTemp && $document) {
+
+            $deleteDocument = $this->documentService->delete($result['document_id']);
+
+            $checkAllDocumentDone = true;
+            $checkUpdateShipment = true;
+            $filterDocument = [
+                'shipment_id' => $deleteDocument->shipment_id,
+                'get' => true,
+            ];
+            $documents = $this->documentService->filter($filterDocument);
+            if (!empty($documents)) {
+                foreach ($documents as $document) {
+                    if ($document->status != 'done') {
+                        $checkAllDocumentDone = false;
+                    }
+                }
+                if ($checkAllDocumentDone == true) {
+                    $editShipment = [
+                        'status' => 'done',
+                    ];
+                    $updateShipment = $this->shipmentService->update($deleteDocument->shipment_id, $editShipment);
+                    if (!$updateShipment) {
+                        $checkUpdateShipment = false;
+                    }
+                }
+            }
+
+            if ($checkCodeProductTemp && $deleteDocument && $checkUpdateShipment) {
                 DB::commit();
                 return response()->json([
                     'status' => true,

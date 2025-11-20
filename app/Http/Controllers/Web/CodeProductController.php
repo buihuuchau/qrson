@@ -79,9 +79,9 @@ class CodeProductController extends Controller
             if (!$codeProductTemp) {
                 return response()->json([
                     'status' => false,
-                    'status_code' => 400,
+                    'status_code' => 404,
                     'message' => 'Mã sản phẩm không tồn tại',
-                ], 400);
+                ], 404);
             }
 
             DB::beginTransaction();
@@ -98,7 +98,7 @@ class CodeProductController extends Controller
 
             $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
 
-            if ($document != false && $deleteCodeProductTemp != false) {
+            if ($document && $deleteCodeProductTemp) {
                 DB::commit();
                 return response()->json([
                     'status' => true,
