@@ -40,7 +40,16 @@ class DocumentController extends Controller
 
             $filterDocument = [
                 'shipment_id' => $data['shipment_id'],
-                'orderBy' => 'created_at',
+                'orderBy' => [
+                    [
+                        'column' => 'shipment_id',
+                        'value' => 'desc',
+                    ],
+                    [
+                        'column' => 'created_at',
+                        'value' => 'desc',
+                    ],
+                ],
                 'get' => [
                     'paginate' => 50,
                 ],

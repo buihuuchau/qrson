@@ -48,7 +48,20 @@ class CodeProductController extends Controller
             $filterCodeProduct = [
                 'shipment_id' => $shipment_id,
                 'document_id' => $document_id,
-                'orderBy' => 'created_at',
+                'orderBy' => [
+                    [
+                        'column' => 'shipment_id',
+                        'value' => 'desc',
+                    ],
+                    [
+                        'column' => 'document_id',
+                        'value' => 'desc',
+                    ],
+                    [
+                        'column' => 'created_at',
+                        'value' => 'desc',
+                    ],
+                ],
                 'get' => [
                     'paginate' => 50,
                 ],

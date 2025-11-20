@@ -30,5 +30,8 @@ Route::prefix('user')->group(function () {
         Route::get('/document-check', [App\Http\Controllers\Apk\DocumentController::class, 'check']);
         Route::post('/document-add', [App\Http\Controllers\Apk\DocumentController::class, 'add']);
         Route::post('/document-delete', [App\Http\Controllers\Apk\DocumentController::class, 'delete']);
+
+        Route::post('/code-product-add', [App\Http\Controllers\Apk\CodeProductController::class, 'add']);
+        Route::post('/code-product-delete', [App\Http\Controllers\Apk\CodeProductController::class, 'delete']);
     });
 });
