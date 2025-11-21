@@ -19,5 +19,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/code-product-delete', [App\Http\Controllers\Web\CodeProductController::class, 'delete'])->name('web.code-product.delete');
 
         Route::get('/user-list', [App\Http\Controllers\Web\UserController::class, 'list'])->name('web.user.list');
+        Route::post('/user-add', [App\Http\Controllers\Web\UserController::class, 'add'])->name('web.user.add');
+        Route::post('/user-update', [App\Http\Controllers\Web\UserController::class, 'update'])->name('web.user.update');
+        Route::post('/user-delete', [App\Http\Controllers\Web\UserController::class, 'delete'])->name('web.user.delete');
     });
 });

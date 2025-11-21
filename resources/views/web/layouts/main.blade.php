@@ -33,6 +33,8 @@
     <link rel="stylesheet"
         href="{{ asset('AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.css') }}">
+    <!-- Spinner -->
+    <link rel="stylesheet" href="{{ asset('web/css/spinner.css') }}">
     @yield('custom_css')
 </head>
 
@@ -49,6 +51,7 @@
         @include('web.layouts.sidebar')
         @yield('content')
         @include('web.layouts.footer')
+        @include('web.layouts.spinner')
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
@@ -116,7 +119,7 @@
                 "lengthChange": false, //so dong cua 1 trang
                 "searching": true, //o tim kiem
                 "ordering": true, // sap xep dong
-                "order": [],// không sắp xếp ở lần đầu vào
+                "order": [], // không sắp xếp ở lần đầu vào
                 "info": false, // hien thi co tat ca bao nhieu dong
                 "autoWidth": false, // tu dong thu nho theo kich co man hinh, nen chon false de dung cho dien thoai
                 "responsive": true, // nut mo rong khi man hinh bi hep
