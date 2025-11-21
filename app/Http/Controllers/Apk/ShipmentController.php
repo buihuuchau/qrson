@@ -106,7 +106,7 @@ class ShipmentController extends Controller
                 $valueCreateShipment = [
                     'id' => $result['shipment_id'],
                     'status' => 'pending',
-                    'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
+                    'created_by' => (Auth::guard('api')->user()->name ?? Auth::user()->name) . ' - ' . (Auth::guard('api')->user()->phone ?? Auth::user()->phone),
                 ];
                 $createShipment = $this->shipmentService->create($valueCreateShipment);
                 if ($createShipment) {

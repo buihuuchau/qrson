@@ -146,7 +146,7 @@ class DocumentController extends Controller
                 'total_current' => 0,
                 'total' => $result['total'],
                 'status' => 'pending',
-                'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
+                'created_by' => (Auth::guard('api')->user()->name ?? Auth::user()->name) . ' - ' . (Auth::guard('api')->user()->phone ?? Auth::user()->phone),
             ];
             $createDocument = $this->documentService->create($valueCreateDocument);
 

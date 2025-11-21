@@ -111,7 +111,7 @@ class CodeProductController extends Controller
                 'shipment_id' => $shipment->id,
                 'document_id' => $document->id,
                 'scan' => $scan,
-                'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
+                'created_by' => (Auth::guard('api')->user()->name ?? Auth::user()->name) . ' - ' . (Auth::guard('api')->user()->phone ?? Auth::user()->phone),
             ];
             $createCodeProductTemp = $this->codeProductTempService->create($valueCreateCodeProductTemp);
 

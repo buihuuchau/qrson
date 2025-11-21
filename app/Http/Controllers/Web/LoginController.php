@@ -12,7 +12,11 @@ class LoginController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            return redirect()->route('web.shipment.list');
+            if (Auth()->user()->role == 'admin') {
+                return redirect()->route('web.shipment.list');
+            } else {
+                return redirect()->route('user.scan.shipment');
+            }
         }
         return view('web.auth.login');
     }
@@ -30,8 +34,7 @@ class LoginController extends Controller
                 if (Auth::user()['role'] == 'admin') {
                     return redirect()->route('web.shipment.list');
                 } else {
-                    Auth::logout();
-                    return redirect()->back()->withErrors(['login' => 'Bạn không phải là Admin. Hãy dùng tài khoản Admin để đăng nhập lại.'])->withInput();
+                    return redirect()->route('user.scan');
                 }
             } else {
                 return redirect()->back()->withErrors(['login' => 'Số điện thoại hoặc mật khẩu không đúng. Vui lòng thử lại.'])->withInput();
