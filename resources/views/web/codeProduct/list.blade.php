@@ -86,7 +86,7 @@
                                                 @if ((!empty($shipment_id) || !empty($document)) && $document->status != 'done')
                                                     <td>
                                                         <button class="btn btn-danger clearCodeProduct" title="Xóa"
-                                                            value="{{ $codeProduct->id }}"><i
+                                                            data-code-product-id="{{ $codeProduct->id }}"><i
                                                                 class="fas fa-trash"></i></button>
                                                     </td>
                                                 @endif
@@ -128,9 +128,8 @@
     <script>
         $('.clearCodeProduct').click(function(e) {
             e.preventDefault();
-            let btn = $(this);
-            btn.prop('disabled', true);
-            let code_product_id = $(this).val();
+            let button = $(this);
+            let code_product_id = button.data('code-product-id');
             Swal.fire({
                 title: "Xác nhận xóa?",
                 text: "Mã sản phẩm " + code_product_id + " sẽ bị xóa và không thể khôi phục!",
@@ -142,6 +141,7 @@
                 cancelButtonText: "Hủy"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    $('#loadingOverlay').css('display', 'flex');
                     $.ajax({
                         type: "POST",
                         url: "{{ route('web.code-product.delete') }}",
@@ -160,10 +160,11 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                            btn.closest('tr').remove();
+                            button.closest('tr').remove();
                             $("#example1 tbody tr").each(function(index) {
                                 $(this).find("td:first").text(index + 1);
                             });
+                            $('#loadingOverlay').hide();
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
@@ -174,11 +175,9 @@
                                 title: "Lỗi",
                                 text: message,
                             });
-                            btn.prop('disabled', false);
+                            $('#loadingOverlay').hide();
                         }
                     });
-                } else {
-                    btn.prop('disabled', false);
                 }
             });
         });

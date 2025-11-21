@@ -76,7 +76,7 @@
                                                     </form>
                                                     @if ($shipment->status != 'done' && $shipment->document->count() == 0)
                                                         <button class="btn btn-danger clearShipment" title="Xóa"
-                                                            value="{{ $shipment->id }}"><i
+                                                            data-shipment-id="{{ $shipment->id }}"><i
                                                                 class="fas fa-trash"></i></button>
                                                     @endif
                                                 </td>
@@ -114,9 +114,8 @@
     <script>
         $('.clearShipment').click(function(e) {
             e.preventDefault();
-            let btn = $(this);
-            btn.prop('disabled', true);
-            let shipment_id = $(this).val();
+            let button = $(this);
+            let shipment_id = button.data('shipment-id');
             Swal.fire({
                 title: "Xác nhận xóa?",
                 text: "Shipment ID:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
@@ -128,6 +127,7 @@
                 cancelButtonText: "Hủy"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    $('#loadingOverlay').css('display', 'flex');
                     $.ajax({
                         type: "POST",
                         url: "{{ route('web.shipment.delete') }}",
@@ -146,10 +146,11 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                            btn.closest('tr').remove();
+                            button.closest('tr').remove();
                             $("#example1 tbody tr").each(function(index) {
                                 $(this).find("td:first").text(index + 1);
                             });
+                            $('#loadingOverlay').hide();
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
@@ -160,11 +161,9 @@
                                 title: "Lỗi",
                                 text: message,
                             });
-                            btn.prop('disabled', false);
+                            $('#loadingOverlay').hide();
                         }
                     });
-                } else {
-                    btn.prop('disabled', false);
                 }
             });
         });
