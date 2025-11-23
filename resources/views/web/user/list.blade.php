@@ -38,6 +38,35 @@
                                         Tạo mới
                                     </button>
                                 </div>
+                                <form class="col-md-12 col-sm-12 d-flex" id="formAdd"
+                                    action="{{ route('web.user.list') }}" method="get">
+                                    <div class="col-md-3">
+                                        <label for="name" class="form-label">Họ và tên</label>
+                                        <input id="name" type="text" class="form-control" name="name"
+                                            maxlength="255" value="{{ request()->query('name') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="phone" class="form-label">Số điện thoại</label>
+                                        <input id="phone" type="text" class="form-control" name="phone"
+                                            minlength="10" maxlength="10" value="{{ request()->query('phone') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="role" class="form-label">Quyền hạn</label>
+                                        <select class="form-control" name="role">
+                                            <option value="" disabled selected>-- Chọn --</option>
+                                            <option value="admin" {{ request()->query('role') == 'admin' ? 'selected' : '' }}>
+                                                Quản lý
+                                            </option>
+                                            <option value="user" {{ request()->query('role') == 'user' ? 'selected' : '' }}>
+                                                Nhân viên
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>&nbsp;</label><br>
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                                 @if (session('success'))
                                     <div class="alert alert-success">
                                         {{ session('success') }}

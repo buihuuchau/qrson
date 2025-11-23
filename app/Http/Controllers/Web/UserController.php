@@ -23,10 +23,29 @@ class UserController extends Controller
     public function list(Request $request)
     {
         try {
-            $filterUser = [
-                'get' => [
-                    'paginate' => 50,
-                ],
+            $acceptFields = [
+                'phone',
+                'name',
+                'role',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $filterUser = [];
+
+            if (!empty($result['phone'])) {
+                $filterUser['phone'] = $result['phone'];
+            }
+            if (!empty($result['name'])) {
+                $filterUser['whereRaw'] = 'name like "%' . $result['name'] . '%"';
+            }
+            if (!empty($result['role'])) {
+                $filterUser['role'] = $result['role'];
+            }
+            
+            $filterUser['orderBy'] = 'id';
+
+            $filterUser['get'] = [
+                'paginate' => 50,
             ];
             $users = $this->userService->filter($filterUser);
             $data['users'] = $users;
