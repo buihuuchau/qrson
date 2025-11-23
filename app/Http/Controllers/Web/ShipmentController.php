@@ -25,11 +25,44 @@ class ShipmentController extends Controller
     public function list()
     {
         try {
-            $filterShipment = [
-                'orderBy' => 'created_at',
-                'get' => [
-                    'paginate' => 50,
-                ],
+            $acceptFields = [
+                'shipment_id',
+                'created_by',
+                'from',
+                'to',
+                'status',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            if (!empty($result['shipment_id'])) {
+                $filterShipment['id'] = $result['shipment_id'];
+            }
+
+            if (!empty($result['status'])) {
+                $filterShipment['status'] = $result['status'];
+            }
+
+            $conditions = [];
+            if (!empty($result['created_by'])) {
+                $conditions[] = '(created_by LIKE "%' . $result['created_by'] . '%")';
+            }
+            if (!empty($result['from'])) {
+                $conditions[] = '(created_at >= "' . $result['from'] . '")';
+            }
+            if (!empty($result['to'])) {
+                $conditions[] = '(created_at <= "' . $result['to'] . '")';
+            }
+            $sqlWhere = '';
+            if (!empty($conditions)) {
+                $sqlWhere = implode(' AND ', $conditions);
+            }
+
+            $filterShipment['whereRaw'] = $sqlWhere;
+
+            $filterShipment['orderBy'] = 'created_at';
+
+            $filterShipment['get'] = [
+                'paginate' => 50,
             ];
             $shipments = $this->shipmentService->filter($filterShipment, 'document');
             $data['shipments'] = $shipments;

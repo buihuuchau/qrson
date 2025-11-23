@@ -31,38 +31,40 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Danh sách các Nhân viên</h3>
+                                <h3 class="card-title mb-3">Danh sách các Nhân viên</h3>
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-primary mb-3" data-toggle="modal"
+                                    <button type="button" class="btn btn-primary" data-toggle="modal"
                                         data-target="#exampleModalAdd">
                                         Tạo mới
                                     </button>
                                 </div>
-                                <form class="col-md-12 col-sm-12 d-flex" id="formAdd"
-                                    action="{{ route('web.user.list') }}" method="get">
-                                    <div class="col-md-3">
+                                <form class="mb-3 col-md-12 col-sm-12 d-flex row" action="{{ route('web.user.list') }}"
+                                    method="get">
+                                    <div class="col-md-3 col-sm-6">
                                         <label for="name" class="form-label">Họ và tên</label>
                                         <input id="name" type="text" class="form-control" name="name"
                                             maxlength="255" value="{{ request()->query('name') }}">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-sm-6">
                                         <label for="phone" class="form-label">Số điện thoại</label>
                                         <input id="phone" type="text" class="form-control" name="phone"
                                             minlength="10" maxlength="10" value="{{ request()->query('phone') }}">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-sm-6">
                                         <label for="role" class="form-label">Quyền hạn</label>
                                         <select class="form-control" name="role">
                                             <option value="" disabled selected>-- Chọn --</option>
-                                            <option value="admin" {{ request()->query('role') == 'admin' ? 'selected' : '' }}>
+                                            <option value="admin"
+                                                {{ request()->query('role') == 'admin' ? 'selected' : '' }}>
                                                 Quản lý
                                             </option>
-                                            <option value="user" {{ request()->query('role') == 'user' ? 'selected' : '' }}>
+                                            <option value="user"
+                                                {{ request()->query('role') == 'user' ? 'selected' : '' }}>
                                                 Nhân viên
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-sm-6">
                                         <label>&nbsp;</label><br>
                                         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                                     </div>

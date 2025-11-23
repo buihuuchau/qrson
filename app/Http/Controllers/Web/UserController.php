@@ -30,8 +30,6 @@ class UserController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $filterUser = [];
-
             if (!empty($result['phone'])) {
                 $filterUser['phone'] = $result['phone'];
             }

@@ -31,7 +31,51 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Danh sách các Shipment ID</h3>
+                                <h3 class="card-title mb-3">Danh sách các Shipment ID</h3>
+                                <form class="col-md-12 col-sm-12 d-flex row" action="{{ route('web.shipment.list') }}"
+                                    method="get">
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="shipment_id" class="form-label">Shipment ID</label>
+                                        <input id="shipment_id" type="text" class="form-control" name="shipment_id"
+                                            value="{{ request()->query('shipment_id') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="created_by" class="form-label">Người quét</label>
+                                        <input id="created_by" type="text" class="form-control" name="created_by"
+                                            value="{{ request()->query('created_by') }}">
+                                    </div>
+
+                                    <div class="col-md-2 col-sm-6">
+                                        <label class="form-label">Thời gian quét từ</label>
+                                        <input id="from" type="datetime-local" class="form-control" name="from"
+                                            value="{{ request()->query('from') }}"><br>
+                                    </div>
+
+                                    <div class="col-md-2 col-sm-6">
+                                        <label class="form-label">Thời gian quét đến</label>
+                                        <input id="to" type="datetime-local" class="form-control" name="to"
+                                            value="{{ request()->query('to') }}">
+                                    </div>
+
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="status" class="form-label">Trạng thái</label>
+                                        <select class="form-control" name="status">
+                                            <option value="" disabled selected>-- Chọn --</option>
+                                            <option value="pending"
+                                                {{ request()->query('status') == 'pending' ? 'selected' : '' }}>
+                                                Chưa hoàn thành
+                                            </option>
+                                            <option value="done"
+                                                {{ request()->query('status') == 'done' ? 'selected' : '' }}>
+                                                Đã hoàn thành
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label>&nbsp;</label><br>
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
