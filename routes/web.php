@@ -29,21 +29,20 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['roleUser'])->group(function () {
         Route::prefix('user')->group(function () {
-            Route::get('/scan-shipment', [App\Http\Controllers\User\ScanController::class, 'scanShipment'])->name('user.scan.shipment');
-            Route::get('/scan-document', [App\Http\Controllers\User\ScanController::class, 'scanDocument'])->name('user.scan.document');
-            Route::get('/scan-code-product', [App\Http\Controllers\User\ScanController::class, 'scanCodeProduct'])->name('user.scan.codeProduct');
+            Route::get('/scan-shipment', [App\Http\Controllers\User\ShipmentController::class, 'scanShipment'])->name('user.scan.shipment');
+            Route::get('/shipment-check', [App\Http\Controllers\User\ShipmentController::class, 'check'])->name('user.shipment.check');
+            Route::post('/shipment-add', [App\Http\Controllers\User\ShipmentController::class, 'add'])->name('user.shipment.add');
+            Route::post('/shipment-delete', [App\Http\Controllers\User\ShipmentController::class, 'delete'])->name('user.shipment.delete');
+            Route::post('/shipment-confirm', [App\Http\Controllers\User\ShipmentController::class, 'confirm'])->name('user.shipment.confirm');
 
-            Route::get('/shipment-check', [App\Http\Controllers\Apk\ShipmentController::class, 'check']);
-            Route::post('/shipment-add', [App\Http\Controllers\Apk\ShipmentController::class, 'add']);
-            Route::post('/shipment-delete', [App\Http\Controllers\Apk\ShipmentController::class, 'delete']);
-            Route::post('/shipment-confirm', [App\Http\Controllers\Apk\ShipmentController::class, 'confirm']);
+            Route::get('/scan-document', [App\Http\Controllers\User\DocumentController::class, 'scanDocument'])->name('user.scan.document');
+            Route::get('/document-check', [App\Http\Controllers\User\DocumentController::class, 'check']);
+            Route::post('/document-add', [App\Http\Controllers\User\DocumentController::class, 'add']);
+            Route::post('/document-delete', [App\Http\Controllers\User\DocumentController::class, 'delete']);
 
-            Route::get('/document-check', [App\Http\Controllers\Apk\DocumentController::class, 'check']);
-            Route::post('/document-add', [App\Http\Controllers\Apk\DocumentController::class, 'add']);
-            Route::post('/document-delete', [App\Http\Controllers\Apk\DocumentController::class, 'delete']);
-
-            Route::post('/code-product-add', [App\Http\Controllers\Apk\CodeProductController::class, 'add']);
-            Route::post('/code-product-delete', [App\Http\Controllers\Apk\CodeProductController::class, 'delete']);
+            Route::get('/scan-code-product', [App\Http\Controllers\User\CodeProductController::class, 'scanCodeProduct'])->name('user.scan.codeProduct');
+            Route::post('/code-product-add', [App\Http\Controllers\User\CodeProductController::class, 'add']);
+            Route::post('/code-product-delete', [App\Http\Controllers\User\CodeProductController::class, 'delete']);
         });
     });
 });
