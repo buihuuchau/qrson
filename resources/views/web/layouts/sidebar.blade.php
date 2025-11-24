@@ -40,7 +40,7 @@
                     <a href="{{ route('web.code-product.list') }}"
                         class="nav-link @if (in_array(\Route::currentRouteName(), ['web.code-product.list'])) active @endif">
                         <p>
-                            Mã sản phẩm(đã xong)
+                            Mã sản phẩm
                         </p>
                     </a>
                 </li>

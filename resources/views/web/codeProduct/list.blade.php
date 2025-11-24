@@ -13,24 +13,14 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        @if (!empty($shipment_id))
-                            <h3 class="m-0">
-                                Shipment ID: {{ $shipment_id }}
-                            </h3>
-                        @endif
-                        @if (!empty($document))
-                            <h3 class="m-0">
-                                Số chứng từ: {{ $document->id }}<br>
-                                Số lượng tổng: {{ $document->total }}
-                            </h3>
-                        @endif
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment</a></li>
-                            @if (!empty($document))
+                            @if (!empty(request()->query('document_id')))
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('web.document.list', ['document_id' => $document->id]) }}">
+                                    <a
+                                        href="{{ route('web.document.list', ['document_id' => request()->query('document_id')]) }}">
                                         Số chứng từ
                                     </a>
                                 </li>
@@ -50,7 +40,72 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Danh sách các Mã sản phẩm</h3>
+                                <h3 class="card-title mb-3">Danh sách các Mã sản phẩm</h3>
+                                <form class="col-md-12 col-sm-12 d-flex row" action="{{ route('web.code-product.list') }}"
+                                    method="get">
+                                    <input type="hidden" name="draft" value="true">
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="shipment_id" class="form-label">Shipment ID</label>
+                                        <input id="shipment_id" type="text" class="form-control" name="shipment_id"
+                                            value="{{ request()->query('shipment_id') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="document_id" class="form-label">Số chứng từ</label>
+                                        <input id="document_id" type="text" class="form-control" name="document_id"
+                                            value="{{ request()->query('document_id') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="codeProduct" class="form-label">Mã sản phẩm</label>
+                                        <input id="codeProduct" type="text" class="form-control" name="code_product_id"
+                                            value="{{ request()->query('code_product_id') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="created_by" class="form-label">Người nhập</label>
+                                        <input id="created_by" type="text" class="form-control" name="created_by"
+                                            value="{{ request()->query('created_by') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label class="form-label">Thời gian quét từ</label>
+                                        <input id="from" type="datetime-local" class="form-control" name="from"
+                                            value="{{ request()->query('from') }}"><br>
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label class="form-label">Thời gian quét đến</label>
+                                        <input id="to" type="datetime-local" class="form-control" name="to"
+                                            value="{{ request()->query('to') }}">
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="draft" class="form-label">Trạng thái</label>
+                                        <select class="form-control" name="draft">
+                                            <option value="0"
+                                                {{ (request()->query('draft') ?? 0) == 0 ? 'selected' : '' }}>
+                                                Dữ liệu thật
+                                            </option>
+                                            <option value="1"
+                                                {{ (request()->query('draft') ?? 0) == 1 ? 'selected' : '' }}>
+                                                Dữ liệu tạm
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label for="scan" class="form-label">Manual</label>
+                                        <select class="form-control" name="scan">
+                                            <option value="">-- Chọn --</option>
+                                            <option value="yes"
+                                                {{ request()->query('scan') == 'yes' ? 'selected' : '' }}>
+                                                Quét Qr
+                                            </option>
+                                            <option value="no"
+                                                {{ request()->query('scan') == 'no' ? 'selected' : '' }}>
+                                                Nhập thủ công
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-sm-6">
+                                        <label>&nbsp;</label><br>
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                    </div>
+                                </form>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -64,7 +119,7 @@
                                             <th>Thời gian quét</th>
                                             <th>Người thực hiện</th>
                                             <th>Thực hiện manual</th>
-                                            @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                            @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
                                                 <th>Thao tác</th>
                                             @endif
                                         </tr>
@@ -83,7 +138,7 @@
                                                         X
                                                     @endif
                                                 </td>
-                                                @if ((!empty($shipment_id) || !empty($document)) && $document->status != 'done')
+                                                @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
                                                     <td>
                                                         <button class="btn btn-danger clearCodeProduct" title="Xóa"
                                                             data-code-product-id="{{ $codeProduct->id }}"><i
@@ -102,7 +157,7 @@
                                             <th>Thời gian quét</th>
                                             <th>Người thực hiện</th>
                                             <th>Thực hiện manual</th>
-                                            @if ((!empty($shipment_id) || !empty($document)) && $document->status == 'pending')
+                                            @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
                                                 <th>Thao tác</th>
                                             @endif
                                         </tr>

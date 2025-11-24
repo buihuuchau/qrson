@@ -32,27 +32,56 @@ class DocumentController extends Controller
         try {
             $acceptFields = [
                 'shipment_id',
+                'document_id',
+                'created_by',
+                'from',
+                'to',
+                'status',
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $shipment_id = $result['shipment_id'] ?? null;
-            $data['shipment_id'] = $shipment_id;
+            if (!empty($result['shipment_id'])) {
+                $filterDocument['shipment_id'] = $result['shipment_id'];
+            }
 
-            $filterDocument = [
-                'shipment_id' => $data['shipment_id'],
-                'orderBy' => [
-                    [
-                        'column' => 'shipment_id',
-                        'value' => 'desc',
-                    ],
-                    [
-                        'column' => 'created_at',
-                        'value' => 'desc',
-                    ],
+            if (!empty($result['document_id'])) {
+                $filterDocument['id'] = $result['document_id'];
+            }
+
+            if (!empty($result['status'])) {
+                $filterDocument['status'] = $result['status'];
+            }
+
+            $conditions = [];
+            if (!empty($result['created_by'])) {
+                $conditions[] = '(created_by LIKE "%' . $result['created_by'] . '%")';
+            }
+            if (!empty($result['from'])) {
+                $conditions[] = '(created_at >= "' . $result['from'] . '")';
+            }
+            if (!empty($result['to'])) {
+                $conditions[] = '(created_at <= "' . $result['to'] . '")';
+            }
+            $sqlWhere = '';
+            if (!empty($conditions)) {
+                $sqlWhere = implode(' AND ', $conditions);
+            }
+
+            $filterDocument['whereRaw'] = $sqlWhere;
+
+            $filterDocument['orderBy'] = [
+                [
+                    'column' => 'shipment_id',
+                    'value' => 'desc',
                 ],
-                'get' => [
-                    'paginate' => 50,
+                [
+                    'column' => 'created_at',
+                    'value' => 'desc',
                 ],
+            ];
+
+            $filterDocument['get'] = [
+                'paginate' => 50,
             ];
             $documents = $this->documentService->filter($filterDocument);
             $data['documents'] = $documents;

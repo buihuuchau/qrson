@@ -44,19 +44,16 @@
                                         <input id="created_by" type="text" class="form-control" name="created_by"
                                             value="{{ request()->query('created_by') }}">
                                     </div>
-
                                     <div class="col-md-2 col-sm-6">
                                         <label class="form-label">Thời gian quét từ</label>
                                         <input id="from" type="datetime-local" class="form-control" name="from"
                                             value="{{ request()->query('from') }}"><br>
                                     </div>
-
                                     <div class="col-md-2 col-sm-6">
                                         <label class="form-label">Thời gian quét đến</label>
                                         <input id="to" type="datetime-local" class="form-control" name="to"
                                             value="{{ request()->query('to') }}">
                                     </div>
-
                                     <div class="col-md-2 col-sm-6">
                                         <label for="status" class="form-label">Trạng thái</label>
                                         <select class="form-control" name="status">

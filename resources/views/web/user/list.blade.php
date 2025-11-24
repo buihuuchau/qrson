@@ -197,7 +197,6 @@
                             <input id="password_confirm" type="password" class="form-control"
                                 name="password_confirmation" minlength="6" required>
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
@@ -254,7 +253,6 @@
                             <input id="password_confirm" type="password" class="form-control"
                                 name="password_confirmation" minlength="6">
                         </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
