@@ -131,8 +131,8 @@
                                                 <td>{{ $codeProduct->shipment_id }}</td>
                                                 <td>{{ $codeProduct->document_id }}</td>
                                                 <td>{{ $codeProduct->id }}</td>
-                                                <td>{{ $codeProduct->created_by }}</td>
                                                 <td>{{ $codeProduct->created_at }}</td>
+                                                <td>{{ $codeProduct->created_by }}</td>
                                                 <td>
                                                     @if ($codeProduct->scan == 'no')
                                                         X

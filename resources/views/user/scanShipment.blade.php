@@ -1,9 +1,12 @@
 @extends('user.main')
 
-@section('title', 'Quét QR & Barcode')
+@section('title', 'Barcode Shipment No')
 
 @section('content')
-    <h4 class="mb-3 text-center">📷 Quét QR / Barcode</h4>
+    <h4 class="mb-3 text-center">📷 Barcode Shipment No</h4>
+    <div style="text-align: end">
+        <a href="{{ route('web.logout') }}">Đăng xuất</a>
+    </div>
     <div class="text-center mb-3">
         <button id="btnStartScan" class="btn btn-primary">Bật camera</button>
         <button id="btnStopScan" class="btn btn-danger">Tắt camera</button>
@@ -11,16 +14,82 @@
     <div id="qr-reader" style="width:100%; margin: auto;"></div>
     <div class="mb-3">
         <label>Shipment No:</label>
-        <input type="text" id="shipment_id" class="form-control">
+        <input type="text" id="result_shipment_id" class="form-control">
     </div>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul style="margin: 0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <h5 class="text-center" id="apiResult"></h5>
-    <form id="formAddShipment" class="d-none" action="{{ route('user.shipment.add') }}" method="post">
+    <form id="formAdd" class="d-none text-center" action="{{ route('user.shipment.add') }}" method="post">
         @csrf
-        <input id="shipment_id" type="hidden" name="shipment_id">
-        <button type="submit">Tạo Shipment No</button>
+        <input id="input_shipment_id" type="hidden" name="shipment_id">
+        <button id="btnAddSubmit" type="submit" class="btn btn-primary">Tạo Shipment No mới với mã vừa quét
+            được</button>
     </form>
+
     <div class="mt-3 text-center">
         <button id="btnSendApi" class="btn btn-success">Gửi API</button>
+    </div>
+
+    <h5>Danh sách các Shipment No mà bạn đã tạo.</h5>
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Số thứ tự</th>
+                    <th>Shipment ID</th>
+                    <th>Thời gian quét</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($shipments as $key => $shipment)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $shipment->id }}</td>
+                        <td>{{ $shipment->created_at }}</td>
+                        <td class="d-flex">
+                            <a class="btn btn-primary mr-5" title="Chi tiết"
+                                href="{{ route('user.scan.document', ['shipment_id' => $shipment->id]) }}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            @if ($shipment->status != 'done' && $shipment->document->count() == 0)
+                                <button class="btn btn-danger clearShipment" title="Xóa"
+                                    data-shipment-id="{{ $shipment->id }}"><i class="fas fa-trash"></i></button>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Số thứ tự</th>
+                    <th>Shipment ID</th>
+                    <th>Thời gian quét</th>
+                    <th>Thao tác</th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="d-flex justify-content-end">
+            {{ $shipments->appends($_GET)->links('web.layouts.pagination_vi') }}
+        </div>
     </div>
 @endsection
 
@@ -91,7 +160,7 @@
             $('#btnStartScan').click(async function() { // 👉 thêm async
                 try {
                     const shipmentId = await scanQr();
-                    $("#shipment_id").val(shipmentId);
+                    $("#result_shipment_id").val(shipmentId);
                     screenLog("✅ Gán shipment_id thành công: " + shipmentId);
                 } catch (err) {
                     screenLog("❌ Scan lỗi: " + err);
@@ -112,7 +181,7 @@
             });
 
             $('#btnSendApi').click(function() {
-                let shipment_id = $('#shipment_id').val();
+                let shipment_id = $('#result_shipment_id').val();
                 if (!shipment_id) {
                     screenLog("⚠ Chưa có mã để gửi");
                     return;
@@ -123,7 +192,6 @@
                     type: "get",
                     data: {
                         shipment_id: shipment_id,
-                        _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
                         if (response.status_code == 200) {
@@ -132,20 +200,109 @@
                             window.location.href = "/user/scan-document?shipment_id=" +
                                 shipment_id;
                         }
+                        if (response.status_code == 404) {
+                            screenLog(
+                                "✅ Shipment No chưa được tạo, hiển thị form tạo Shipment No"
+                            );
+                            let html = `
+                                <h5 class="text-warning mb-3">${response.message}</h5>
+                            `;
+                            $("#apiResult").html(html);
+
+                            $("#input_shipment_id").val(shipment_id);
+
+                            $("#formAdd").removeClass("d-none");
+                        }
                     },
                     error: function(err) {
                         let error = err.responseJSON;
-                        let shipment_id = $("#shipment_id").val();
-                        screenLog("❌ API Error status_code: " + error.status_code);
+                        screenLog("❌ API Error status_code: " + error.message);
+                        screenLog("❌ API Error message: " + error.message);
+                    }
+                });
+            });
 
-                        let html = `
-                            <h5 class="text-danger mb-3">${error.message}</h5>
-                        `;
-                        $("#apiResult").html(html);
+            $('#btnAddSubmit').click(function(e) {
+                e.preventDefault();
+                let formAdd = $('#formAdd')[0];
+                Swal.fire({
+                    title: "Thêm mới",
+                    text: "Xác nhận tạo mới Shipment No?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Thêm",
+                    cancelButtonText: "Hủy"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#loadingOverlay').css('display', 'flex');
+                        setTimeout(function() {
+                            if (!formAdd.checkValidity()) {
+                                $('#loadingOverlay').hide();
+                                formAdd.reportValidity();
+                                return;
+                            }
+                            formAdd.submit();
+                        }, 300);
+                    }
+                });
+            });
 
-                        $("#shipment_id").val(shipment_id);
-
-                        $("#formAddShipment").removeClass("d-none");
+            $('.clearShipment').click(function(e) {
+                e.preventDefault();
+                let button = $(this);
+                let shipment_id = button.data('shipment-id');
+                Swal.fire({
+                    title: "Xác nhận xóa?",
+                    text: "Shipment ID:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Xóa",
+                    cancelButtonText: "Hủy"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#loadingOverlay').css('display', 'flex');
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ route('user.shipment.delete') }}",
+                            data: {
+                                shipment_id: shipment_id,
+                                _token: "{{ csrf_token() }}"
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                let message = response && response.message ? response
+                                    .message :
+                                    'Xóa Shipment ID thành công';
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Thành công",
+                                    text: message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                button.closest('tr').remove();
+                                $("#example1 tbody tr").each(function(index) {
+                                    $(this).find("td:first").text(index + 1);
+                                });
+                                $('#loadingOverlay').hide();
+                            },
+                            error: function(xhr, status, error) {
+                                let message = xhr.responseJSON && xhr.responseJSON
+                                    .message ?
+                                    xhr.responseJSON.message :
+                                    'Đã có lỗi xảy ra';
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Lỗi",
+                                    text: message,
+                                });
+                                $('#loadingOverlay').hide();
+                            }
+                        });
                     }
                 });
             });

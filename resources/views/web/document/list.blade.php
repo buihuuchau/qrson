@@ -93,7 +93,7 @@
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
-                                            <th>Số mã đã quét</th>
+                                            <th>Số mã đã nhập</th>
                                             <th>Số mã tất cả</th>
                                             <th>Người nhập</th>
                                             <th>Thời gian nhập</th>
@@ -143,7 +143,7 @@
                                             <th>Số thứ tự</th>
                                             <th>Shipment ID</th>
                                             <th>Số chứng từ</th>
-                                            <th>Số mã đã quét</th>
+                                            <th>Số mã đã nhập</th>
                                             <th>Số mã tất cả</th>
                                             <th>Người nhập</th>
                                             <th>Thời gian nhập</th>

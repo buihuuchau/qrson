@@ -5,11 +5,11 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\codeProductAddRequest;
 use App\Http\Requests\codeProductDeleteRequest;
-use App\Http\Requests\documentDeleteRequest;
 use App\Services\CodeProductService;
 use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use App\Services\ShipmentService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -38,10 +38,45 @@ class CodeProductController extends Controller
 
     public function scanCodeProduct(Request $request)
     {
-        return view('user.scanCodeProduct');
+        try {
+            $acceptFields = [
+                'shipment_id',
+                'document_id',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $shipment = $this->shipmentService->find($result['shipment_id']);
+            if (empty($shipment)) {
+                return redirect()->route('user.scan.shipment')->withErrors('Shipment No không tồn tại.');
+            }
+
+            $document = $this->documentService->find($result['document_id']);
+            if (empty($document)) {
+                return redirect()->route('user.scan.shipment')->withErrors('Số chứng từ không tồn tại.');
+            }
+
+            $filterCodeProductTemp = [
+                'shipment_id' => $shipment->id,
+                'document_id' => $document->id,
+                'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
+                'orderBy' => 'created_at',
+                'get' => [
+                    'paginate' => 50,
+                ],
+            ];
+            $codeProducts = $this->codeProductTempService->filter($filterCodeProductTemp);
+
+            $data['codeProducts'] = $codeProducts;
+            $data['shipment'] = $shipment;
+            $data['document'] = $document;
+            return view('user.scanCodeProduct', $data);
+        } catch (\Throwable $th) {
+            Log::error('User/CodeProductController scan error: ' . $th->getMessage());
+            return back()->withErrors('Lỗi hệ thống.');
+        }
     }
 
-    public function add(Request $request)
+    public function add(codeProductAddRequest $request)
     {
         try {
             $acceptFields = [
@@ -51,6 +86,8 @@ class CodeProductController extends Controller
                 'scan'
             ];
             $result = Arr::only(request()->all(), $acceptFields);
+
+            $scan = $result['scan'] ?? 'yes';
 
             $validator = Validator::make($result, (new codeProductAddRequest())->rules(), (new codeProductAddRequest())->messages());
 
@@ -62,52 +99,74 @@ class CodeProductController extends Controller
                 ], 422);
             }
 
-            $scan = $result['scan'] ?? 'yes';
-
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 404,
-                    'message' => 'Shipment ID không tồn tại. Vui lòng kiểm tra lại!',
-                ], 404);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 404,
+                        'message' => 'Shipment ID không tồn tại. Vui lòng kiểm tra lại!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Shipment ID không tồn tại. Vui lòng kiểm tra lại!')->withInput();
+                }
             }
 
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 404,
-                    'message' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
-                ], 404);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 404,
+                        'message' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Số chứng từ không tồn tại. Vui lòng kiểm tra lại!')->withInput();
+                }
             } elseif ($document->shipment_id != $shipment->id) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!',
-                ], 409);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!')->withInput();
+                }
             } elseif ($document->status == 'done') {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số chứng từ đã hoàn tất, không thể thêm mã sản phẩm!',
-                ], 409);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Số chứng từ đã hoàn tất, không thể thêm mã sản phẩm!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Số chứng từ đã hoàn tất, không thể thêm mã sản phẩm!')->withInput();
+                }
             } elseif ($document->total_current >= $document->total) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số lượng Mã sản phẩm đã đạt đến giới hạn của Số chứng từ này, không thể thêm mã sản phẩm!',
-                ], 409);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Số lượng Mã sản phẩm đã đạt đến giới hạn của Số chứng từ này, không thể thêm mã sản phẩm!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Số lượng Mã sản phẩm đã đạt đến giới hạn của Số chứng từ này, không thể thêm mã sản phẩm!')->withInput();
+                }
             }
 
             $codeProductTemp = $this->codeProductTempService->find($result['code_product_id']);
             $codeProduct = $this->codeProductService->find($result['code_product_id']);
             if (!empty($codeProductTemp) || !empty($codeProduct)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Mã sản phẩm đã tồn tại, không thể tạo mới!',
-                ], 409);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Mã sản phẩm đã tồn tại, không thể tạo mới!',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Mã sản phẩm đã tồn tại, không thể tạo mới!')->withInput();
+                }
             }
 
             DB::beginTransaction();
@@ -125,31 +184,45 @@ class CodeProductController extends Controller
             ];
             $updateDocument = $this->documentService->update($document->id, $valueUpdateDocument);
             if ($createCodeProductTemp && $updateDocument) {
+                $createCodeProductTemp['time_created_at'] = Carbon::parse($createCodeProductTemp->created_at)->format('Y-m-d H:i:s');
                 DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'status_code' => 201,
-                    'message' => 'Tạo mới Mã sản phẩm thành công.',
-                    'data' => [
-                        'codeProductTemp' => $createCodeProductTemp,
-                    ],
-                ], 201);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => true,
+                        'status_code' => 201,
+                        'message' => 'Tạo mới Mã sản phẩm thành công.',
+                        'data' => [
+                            'codeProductTemp' => $createCodeProductTemp,
+                            'document' => $updateDocument,
+                        ],
+                    ], 201);
+                } else {
+                    return back()->with('success', 'Tạo mới Mã sản phẩm thành công.');
+                }
             } else {
                 DB::rollBack();
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Tạo mới Mã sản phẩm thất bại.',
-                ], 409);
+                if ($scan == 'yes') {
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Tạo mới Mã sản phẩm thất bại.',
+                    ], 200);
+                } else {
+                    return back()->withErrors('Tạo mới Mã sản phẩm thất bại.')->withInput();
+                }
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('CodeProductController add error: ' . $th->getMessage());
-            return response()->json([
-                'status' => false,
-                'status_code' => 500,
-                'message' => 'Lỗi hệ thống.',
-            ], 500);
+            Log::error('User/CodeProductController add error: ' . $th->getMessage());
+            if ($scan == 'yes') {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 500,
+                    'message' => 'Lỗi hệ thống.',
+                ], 500);
+            } else {
+                return back()->withErrors('Lỗi hệ thống.')->withInput();
+            }
         }
     }
 
@@ -211,7 +284,7 @@ class CodeProductController extends Controller
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('CodeProductController delete error: ' . $th->getMessage());
+            Log::error('User/CodeProductController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,

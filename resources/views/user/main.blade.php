@@ -10,6 +10,15 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ asset('AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css') }}">
+
+    <!-- sweetalert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Spinner -->
+    <link rel="stylesheet" href="{{ asset('web/css/spinner.css') }}">
+
     <!-- Custom CSS -->
     @yield('custom_css')
 
@@ -42,12 +51,15 @@
 
     <div class="container py-3">
         @yield('content')
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+        </div>
     </div>
 
     <!-- Debug Console -->
-    <div id="debugLog">
+    {{-- <div id="debugLog">
         <b>📟 DEBUG LOG:</b><br>
-    </div>
+    </div> --}}
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -63,12 +75,12 @@
 
     <script>
         function screenLog(message) {
-            $('#debugLog').append('<div>👉 ' + message + '</div>');
-            $('#debugLog').scrollTop($('#debugLog')[0].scrollHeight);
+            // $('#debugLog').append('<div>👉 ' + message + '</div>');
+            // $('#debugLog').scrollTop($('#debugLog')[0].scrollHeight);
         }
 
         $(document).ready(function() {
-            screenLog("Trang main đã load xong.");
+            // screenLog("Trang main đã load xong.");
         });
     </script>
 

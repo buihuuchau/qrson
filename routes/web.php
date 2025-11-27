@@ -36,13 +36,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/shipment-confirm', [App\Http\Controllers\User\ShipmentController::class, 'confirm'])->name('user.shipment.confirm');
 
             Route::get('/scan-document', [App\Http\Controllers\User\DocumentController::class, 'scanDocument'])->name('user.scan.document');
-            Route::get('/document-check', [App\Http\Controllers\User\DocumentController::class, 'check']);
-            Route::post('/document-add', [App\Http\Controllers\User\DocumentController::class, 'add']);
-            Route::post('/document-delete', [App\Http\Controllers\User\DocumentController::class, 'delete']);
+            Route::post('/document-add', [App\Http\Controllers\User\DocumentController::class, 'add'])->name('user.document.add');
+            Route::post('/document-delete', [App\Http\Controllers\User\DocumentController::class, 'delete'])->name('user.document.delete');
 
             Route::get('/scan-code-product', [App\Http\Controllers\User\CodeProductController::class, 'scanCodeProduct'])->name('user.scan.codeProduct');
-            Route::post('/code-product-add', [App\Http\Controllers\User\CodeProductController::class, 'add']);
-            Route::post('/code-product-delete', [App\Http\Controllers\User\CodeProductController::class, 'delete']);
+            Route::post('/code-product-add', [App\Http\Controllers\User\CodeProductController::class, 'add'])->name('user.code-product.add');
+            Route::post('/code-product-delete', [App\Http\Controllers\User\CodeProductController::class, 'delete'])->name('user.code-product.delete');
         });
     });
 });

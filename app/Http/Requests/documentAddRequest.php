@@ -24,7 +24,7 @@ class documentAddRequest extends FormRequest
         return [
             'shipment_id' => 'required',
             'document_id' => 'required',
-            'total' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:1',
         ];
     }
 

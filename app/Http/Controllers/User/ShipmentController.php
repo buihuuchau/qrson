@@ -37,7 +37,21 @@ class ShipmentController extends Controller
 
     public function scanShipment(Request $request)
     {
-        return view('user.scanShipment');
+        try {
+            $filterShipment = [
+                'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
+                'orderBy' => 'created_at',
+                'get' => [
+                    'paginate' => 50,
+                ],
+            ];
+            $shipments = $this->shipmentService->filter($filterShipment, 'document');
+            $data['shipments'] = $shipments;
+            return view('user.scanShipment', $data);
+        } catch (\Throwable $th) {
+            Log::error('User/ShipmentController scan error: ' . $th->getMessage());
+            return back()->withErrors('Lỗi hệ thống.');
+        }
     }
 
     public function check(Request $request)
@@ -82,7 +96,7 @@ class ShipmentController extends Controller
         }
     }
 
-    public function add(Request $request)
+    public function add(shipmentRequest $request)
     {
         try {
             $acceptFields = [
@@ -90,23 +104,9 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $validator = Validator::make($result, (new shipmentRequest())->rules(), (new shipmentRequest())->messages());
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 422,
-                    'message' => $validator->errors()
-                ], 422);
-            }
-
             $checkShipment = $this->shipmentService->find($result['shipment_id']);
             if (!empty($checkShipment)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Shipment ID đã tồn tại, không thể tạo mới!',
-                ], 409);
+                return back()->withErrors('Shipment ID đã tồn tại, không thể tạo mới!');
             } else {
                 $valueCreateShipment = [
                     'id' => $result['shipment_id'],
@@ -115,29 +115,14 @@ class ShipmentController extends Controller
                 ];
                 $createShipment = $this->shipmentService->create($valueCreateShipment);
                 if ($createShipment) {
-                    return response()->json([
-                        'status' => true,
-                        'status_code' => 201,
-                        'message' => 'Tạo mới Shipment ID thành công.',
-                        'data' => [
-                            'shipment' => $createShipment,
-                        ],
-                    ], 201);
+                    return redirect()->route('user.scan.document', ['shipment_id' => $createShipment->id])->with('success', 'Tạo mới Shipment ID thành công.');
                 } else {
-                    return response()->json([
-                        'status' => false,
-                        'status_code' => 409,
-                        'message' => 'Tạo mới Shipment ID thất bại.',
-                    ], 409);
+                    return back()->withErrors('Tạo mới Shipment ID thất bại.');
                 }
             }
         } catch (\Throwable $th) {
-            Log::error('ShipmentController add error: ' . $th->getMessage());
-            return response()->json([
-                'status' => false,
-                'status_code' => 500,
-                'message' => 'Lỗi hệ thống.',
-            ], 500);
+            Log::error('User/ShipmentController add error: ' . $th->getMessage());
+            return back()->withErrors('Lỗi hệ thống.');
         }
     }
 
@@ -202,7 +187,7 @@ class ShipmentController extends Controller
                 }
             }
         } catch (\Throwable $th) {
-            Log::error('ShipmentController delete error: ' . $th->getMessage());
+            Log::error('User/ShipmentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
@@ -220,44 +205,18 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
-            $validator = Validator::make($result, (new shipmentConfirmRequest())->rules(), (new shipmentConfirmRequest())->messages());
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 422,
-                    'message' => $validator->errors()
-                ], 422);
-            }
-
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 404,
-                    'message' => 'Shipment ID không tồn tại. Vui lòng kiểm tra lại!',
-                ], 404);
+                return back()->withErrors('Shipment ID không tồn tại. Vui lòng kiểm tra lại!');
             }
 
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 404,
-                    'message' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
-                ], 404);
+                return back()->withErrors('Số chứng từ không tồn tại. Vui lòng kiểm tra lại!');
             } elseif ($document->shipment_id != $shipment->id) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!',
-                ], 409);
+                return back()->withErrors('Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!');
             } elseif ($document->status == 'done') {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!',
-                ], 409);
+                return back()->withErrors('Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!');
             }
 
             $filterCodeProductTemp = [
@@ -267,11 +226,7 @@ class ShipmentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
             if ($document->total_current != $document->total || count($codeProductTemps) != $document->total) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số lượng Mã sản phẩm không khớp, chưa thể xác nhận lưu!',
-                ], 409);
+                return back()->withErrors('Số lượng Mã sản phẩm không khớp, chưa thể xác nhận lưu!');
             }
 
             DB::beginTransaction();
@@ -325,27 +280,15 @@ class ShipmentController extends Controller
 
             if ($checkCreateCodeProduct && $checkDeleteCodeProductTemp && $updateDocument && $updateShipment) {
                 DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'status_code' => 201,
-                    'messages' => 'Xác nhận đã lưu các Mã sản phẩm vào Số chứng từ thành công.',
-                ], 201);
+                return redirect()->route('user.scan.shipment')->with('success', 'Xác nhận đã lưu các Mã sản phẩm vào Số chứng từ thành công.');
             } else {
                 DB::rollBack();
-                return response()->json([
-                    'status' => true,
-                    'status_code' => 409,
-                    'messages' => 'Chưa thể lưu các Mã sản phẩm cho Số chứng từ này.',
-                ], 409);
+                return back()->withErrors('Chưa thể lưu các Mã sản phẩm cho Số chứng từ này.');
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('ShipmentController confirm error: ' . $th->getMessage());
-            return response()->json([
-                'status' => false,
-                'status_code' => 500,
-                'message' => 'Lỗi hệ thống.',
-            ], 500);
+            Log::error('User/ShipmentController confirm error: ' . $th->getMessage());
+            return back()->withErrors('Lỗi hệ thống.');
         }
     }
 }

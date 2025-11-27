@@ -1,130 +1,188 @@
 @extends('user.main')
 
-@section('title', 'Quét QR & Barcode')
+@section('title', 'Nhập số chứng từ')
 
 @section('content')
-    <h4 class="mb-3 text-center">📷 Quét QR / Barcode</h4>
-
-    <div class="text-center mb-3">
-        <button id="btnStartScan" class="btn btn-primary">Bật camera</button>
-        <button id="btnStopScan" class="btn btn-danger">Tắt camera</button>
+    <h4 class="mb-3 text-center">Nhập số chứng từ</h4>
+    <div style="text-align: end">
+        <a href="{{ route('web.logout') }}">Đăng xuất</a>
     </div>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul style="margin: 0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <div id="qr-reader" style="width:100%; margin: auto;"></div>
+    <form id="formAdd" action="{{ route('user.document.add') }}" method="post">
+        @csrf
+        <div class="mb-3">
+            <label for="shipment_id" class="form-label">Shipment No</label>
+            <input type="text" class="form-control" id="shipment_id" name="shipment_id" value="{{ $shipment_id }}"
+                readonly required>
+        </div>
+        <div class="mb-3">
+            <label for="document_id" class="form-label">Số chứng từ</label>
+            <input type="text" class="form-control" id="document_id" name="document_id" value="{{ old('document_id') }}"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="total" class="form-label">Số lượng mã</label>
+            <input type="number" class="form-control" id="total" name="total" min="1"
+                value="{{ old('total') }}" required>
+        </div>
+        <button id="btnAddSubmit" type="submit" class="btn btn-primary">Tạo Số chứng từ</button>
+    </form>
 
-    <div class="mt-3">
-        <label>Mã quét được:</label>
-        <input type="text" id="scanResult" class="form-control" readonly>
-    </div>
-
-    <div class="mt-3 text-center">
-        <button id="btnSendApi" class="btn btn-success">Gửi API</button>
+    <h5>Danh sách các Số chứng từ mà bạn đã tạo nhưng chưa quét đủ mã sản phẩm hoặc chưa xác nhận hoàn thành.</h5>
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Số thứ tự</th>
+                    <th>Shipment ID</th>
+                    <th>Số chứng từ</th>
+                    <th>Số mã đã nhập</th>
+                    <th>Số mã tất cả</th>
+                    <th>Thời gian nhập</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($documents as $key => $document)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $document->shipment_id }}</td>
+                        <td>{{ $document->id }}</td>
+                        <td>{{ $document->total_current }}</td>
+                        <td>{{ $document->total }}</td>
+                        <td>{{ $document->created_at }}</td>
+                        <td>
+                            <a class="btn btn-primary" title="Chi tiết"
+                                href="{{ route('user.scan.codeProduct', ['shipment_id' => $document->shipment_id, 'document_id' => $document->id]) }}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-danger clearDocument" title="Xóa"
+                                data-document-id="{{ $document->id }}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Số thứ tự</th>
+                    <th>Shipment ID</th>
+                    <th>Số chứng từ</th>
+                    <th>Số mã đã nhập</th>
+                    <th>Số mã tất cả</th>
+                    <th>Thời gian nhập</th>
+                    <th>Thao tác</th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="d-flex justify-content-end">
+            {{ $documents->appends($_GET)->links('web.layouts.pagination_vi') }}
+        </div>
     </div>
 @endsection
 
 @section('custom_script')
     <script>
-        $(document).ready(function() {
-
-            screenLog("Trang scan đã load");
-
-            let html5QrCode;
-            let scannerRunning = false;
-
-            $('#btnStartScan').click(function() {
-
-                screenLog("Đã bấm nút bật camera");
-
-                if (typeof Html5Qrcode === "undefined") {
-                    screenLog("❌ Html5Qrcode chưa load");
-                    return;
+        $('#btnAddSubmit').click(function(e) {
+            e.preventDefault();
+            let formAdd = $('#formAdd')[0];
+            Swal.fire({
+                title: "Thêm mới",
+                text: "Xác nhận tạo mới Số chứng từ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Thêm",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingOverlay').css('display', 'flex');
+                    setTimeout(function() {
+                        if (!formAdd.checkValidity()) {
+                            $('#loadingOverlay').hide();
+                            formAdd.reportValidity();
+                            return;
+                        }
+                        formAdd.submit();
+                    }, 300);
                 }
-
-                if (scannerRunning) {
-                    screenLog("⚠ Camera đang chạy rồi");
-                    return;
-                }
-
-                try {
-                    html5QrCode = new Html5Qrcode("qr-reader");
-                    screenLog("✅ Tạo Html5Qrcode thành công");
-                } catch (error) {
-                    screenLog("❌ Lỗi tạo Html5Qrcode: " + error.message);
-                    return;
-                }
-
-                html5QrCode.start({
-                        facingMode: "environment"
-                    }, {
-                        fps: 10,
-                        qrbox: 250,
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.QR_CODE,
-                            Html5QrcodeSupportedFormats.CODE_128,
-                            Html5QrcodeSupportedFormats.EAN_13,
-                            Html5QrcodeSupportedFormats.EAN_8
-                        ]
-                    },
-                    function(decodedText) {
-                        screenLog("✅ Quét được: " + decodedText);
-                        $('#scanResult').val(decodedText);
-
-                        // Dừng sau khi quét được
-                        html5QrCode.stop();
-                        scannerRunning = false;
-                        screenLog("📴 Đã dừng camera");
-                    },
-                    function(error) {
-                        // Có thể bỏ nếu log quá nhiều
-                    }
-                ).then(() => {
-                    scannerRunning = true;
-                    screenLog("📸 Camera đã bật");
-                }).catch(err => {
-                    screenLog("❌ Lỗi mở camera: " + err);
-                });
             });
+        });
 
-            $('#btnStopScan').click(function() {
-                if (html5QrCode && scannerRunning) {
-                    html5QrCode.stop().then(() => {
-                        screenLog("📴 Camera đã tắt");
-                        scannerRunning = false;
-                    }).catch(err => {
-                        screenLog("❌ Lỗi khi tắt camera: " + err);
+        $('.clearDocument').click(function(e) {
+            e.preventDefault();
+            let button = $(this);
+            let document_id = button.data('document-id');
+            Swal.fire({
+                title: "Xác nhận xóa?",
+                text: "Số chứng từ:  " + document_id +
+                    " và các mã sản phẩm đi kèm sẽ bị xóa và không thể khôi phục!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Xóa",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingOverlay').css('display', 'flex');
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('user.document.delete') }}",
+                        data: {
+                            document_id: document_id,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            let message = response && response.message ? response.message :
+                                'Xóa Số chứng từ thành công';
+                            Swal.fire({
+                                icon: "success",
+                                title: "Thành công",
+                                text: message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            button.closest('tr').remove();
+                            $("#example1 tbody tr").each(function(index) {
+                                $(this).find("td:first").text(index + 1);
+                            });
+                            $('#loadingOverlay').hide();
+                        },
+                        error: function(xhr, status, error) {
+                            let message = xhr.responseJSON && xhr.responseJSON.message ?
+                                xhr.responseJSON.message :
+                                'Đã có lỗi xảy ra';
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi",
+                                text: message,
+                            });
+                            $('#loadingOverlay').hide();
+                        }
                     });
-                } else {
-                    screenLog("⚠ Camera chưa được bật");
                 }
             });
-
-            $('#btnSendApi').click(function() {
-                let shipment_id = $('#scanResult').val();
-
-                if (!shipment_id) {
-                    screenLog("⚠ Chưa có mã để gửi");
-                    return;
-                }
-
-                screenLog("📡 Chuẩn bị gọi API với shipment_id: " + shipment_id);
-
-                $.ajax({
-                    url: "/user/shipment-add",
-                    type: "POST",
-                    data: {
-                        shipment_id: shipment_id,
-                        _token: "{{ csrf_token() }}"
-                    },
-                    success: function(res) {
-                        screenLog("✅ API Success: " + JSON.stringify(res));
-                    },
-                    error: function(err) {
-                        screenLog("❌ API Error: " + err.responseText);
-                    }
-                });
-            });
-
-
         });
     </script>
 @endsection
