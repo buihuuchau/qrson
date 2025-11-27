@@ -3,7 +3,7 @@
 @section('title', 'Barcode Shipment No')
 
 @section('content')
-    <h4 class="mb-3 text-center">📷 Barcode Shipment No</h4>
+    <h4 class="mb-3 text-center">Barcode Shipment No</h4>
     <div style="text-align: end">
         <a href="{{ route('web.logout') }}">Đăng xuất</a>
     </div>
@@ -12,10 +12,8 @@
         <button id="btnStopScan" class="btn btn-danger">Tắt camera</button>
     </div>
     <div id="qr-reader" style="width:100%; margin: auto;"></div>
-    <div class="mb-3">
-        <label>Shipment No:</label>
-        <input type="text" id="result_shipment_id" class="form-control">
-    </div>
+    <div id="apiResult" class="text-center" style="border: 2px solid red"></div>
+
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -35,8 +33,6 @@
             </ul>
         </div>
     @endif
-
-    <h5 class="text-center" id="apiResult"></h5>
     <form id="formAdd" class="d-none text-center" action="{{ route('user.shipment.add') }}" method="post">
         @csrf
         <input id="input_shipment_id" type="hidden" name="shipment_id">
@@ -44,17 +40,13 @@
             được</button>
     </form>
 
-    <div class="mt-3 text-center">
-        <button id="btnSendApi" class="btn btn-success">Gửi API</button>
-    </div>
-
     <h5>Danh sách các Shipment No mà bạn đã tạo.</h5>
     <div class="card-body">
         <table id="example1" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Số thứ tự</th>
-                    <th>Shipment ID</th>
+                    <th>Shipment No</th>
                     <th>Thời gian quét</th>
                     <th>Thao tác</th>
                 </tr>
@@ -81,7 +73,7 @@
             <tfoot>
                 <tr>
                     <th>Số thứ tự</th>
-                    <th>Shipment ID</th>
+                    <th>Shipment No</th>
                     <th>Thời gian quét</th>
                     <th>Thao tác</th>
                 </tr>
@@ -159,9 +151,48 @@
 
             $('#btnStartScan').click(async function() { // 👉 thêm async
                 try {
-                    const shipmentId = await scanQr();
-                    $("#result_shipment_id").val(shipmentId);
-                    screenLog("✅ Gán shipment_id thành công: " + shipmentId);
+                    let resultShipmentId = await scanQr();
+                    $('#loadingOverlay').css('display', 'flex');
+                    if (!resultShipmentId) {
+                        screenLog("⚠ Chưa có mã để gửi");
+                        return;
+                    }
+                    screenLog("📡 Chuẩn bị gọi API với shipment_id: " + resultShipmentId);
+                    $.ajax({
+                        url: "/user/shipment-check",
+                        type: "get",
+                        data: {
+                            shipment_id: resultShipmentId,
+                        },
+                        success: function(response) {
+                            if (response.status_code == 200) {
+                                screenLog(
+                                    "✅ Chuyển trang đến nhập Số chứng từ cho Shipment No: " +
+                                    resultShipmentId);
+                                window.location.href = "/user/scan-document?shipment_id=" +
+                                    resultShipmentId;
+                                $('#loadingOverlay').hide();
+                            }
+                            if (response.status_code == 404) {
+                                screenLog(
+                                    "✅ Shipment No chưa được tạo, hiển thị form tạo Shipment No"
+                                );
+                                let html = `
+                                    <h5 class="text-warning mb-3">${response.message}</h5>
+                                `;
+                                $("#apiResult").html(html);
+                                $("#input_shipment_id").val(resultShipmentId);
+                                $("#formAdd").removeClass("d-none");
+                                $('#loadingOverlay').hide();
+                            }
+                        },
+                        error: function(err) {
+                            let error = err.responseJSON;
+                            screenLog("❌ API Error status_code: " + error.message);
+                            screenLog("❌ API Error message: " + error.message);
+                            $('#loadingOverlay').hide();
+                        }
+                    });
                 } catch (err) {
                     screenLog("❌ Scan lỗi: " + err);
                 }
@@ -178,48 +209,6 @@
                 } else {
                     screenLog("⚠ Camera chưa được bật");
                 }
-            });
-
-            $('#btnSendApi').click(function() {
-                let shipment_id = $('#result_shipment_id').val();
-                if (!shipment_id) {
-                    screenLog("⚠ Chưa có mã để gửi");
-                    return;
-                }
-                screenLog("📡 Chuẩn bị gọi API với shipment_id: " + shipment_id);
-                $.ajax({
-                    url: "/user/shipment-check",
-                    type: "get",
-                    data: {
-                        shipment_id: shipment_id,
-                    },
-                    success: function(response) {
-                        if (response.status_code == 200) {
-                            screenLog("✅ Chuyển trang đến nhập Số chứng từ cho Shipment No: " +
-                                shipment_id);
-                            window.location.href = "/user/scan-document?shipment_id=" +
-                                shipment_id;
-                        }
-                        if (response.status_code == 404) {
-                            screenLog(
-                                "✅ Shipment No chưa được tạo, hiển thị form tạo Shipment No"
-                            );
-                            let html = `
-                                <h5 class="text-warning mb-3">${response.message}</h5>
-                            `;
-                            $("#apiResult").html(html);
-
-                            $("#input_shipment_id").val(shipment_id);
-
-                            $("#formAdd").removeClass("d-none");
-                        }
-                    },
-                    error: function(err) {
-                        let error = err.responseJSON;
-                        screenLog("❌ API Error status_code: " + error.message);
-                        screenLog("❌ API Error message: " + error.message);
-                    }
-                });
             });
 
             $('#btnAddSubmit').click(function(e) {
@@ -255,7 +244,7 @@
                 let shipment_id = button.data('shipment-id');
                 Swal.fire({
                     title: "Xác nhận xóa?",
-                    text: "Shipment ID:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
+                    text: "Shipment No:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
@@ -274,27 +263,37 @@
                             },
                             dataType: "json",
                             success: function(response) {
-                                let message = response && response.message ? response
-                                    .message :
-                                    'Xóa Shipment ID thành công';
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Thành công",
-                                    text: message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                button.closest('tr').remove();
-                                $("#example1 tbody tr").each(function(index) {
-                                    $(this).find("td:first").text(index + 1);
-                                });
-                                $('#loadingOverlay').hide();
+                                if (response.status_code == 200) {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Thành công",
+                                        text: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                    button.closest('tr').remove();
+                                    $("#example1 tbody tr").each(function(index) {
+                                        $(this).find("td:first").text(index +
+                                            1);
+                                    });
+                                    $('#loadingOverlay').hide();
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Thất bại",
+                                        text: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                    $('#loadingOverlay').hide();
+                                }
+
                             },
                             error: function(xhr, status, error) {
                                 let message = xhr.responseJSON && xhr.responseJSON
                                     .message ?
                                     xhr.responseJSON.message :
-                                    'Đã có lỗi xảy ra';
+                                    'Đã có lỗi xảy ra.';
                                 Swal.fire({
                                     icon: "error",
                                     title: "Lỗi",
