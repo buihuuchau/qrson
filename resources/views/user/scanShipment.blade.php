@@ -89,6 +89,7 @@
                     });
                 } catch (err) {
                     screenLog("❌ Scan lỗi: " + err);
+                    $('#loadingOverlay').hide();
                 }
             });
 
@@ -150,7 +151,6 @@
                                     });
                                     $('#loadingOverlay').hide();
                                 }
-
                             },
                             error: function(xhr, status, error) {
                                 let message = xhr.responseJSON && xhr.responseJSON

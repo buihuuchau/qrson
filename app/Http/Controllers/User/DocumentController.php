@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\documentAddRequest;
 use App\Http\Requests\documentDeleteRequest;
+use App\Http\Requests\shipmentRequest;
 use App\Services\CodeProductService;
 use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
@@ -35,7 +36,7 @@ class DocumentController extends Controller
         $this->codeProductTempService = $codeProductTempService;
     }
 
-    public function scanDocument(Request $request)
+    public function scanDocument(shipmentRequest $request)
     {
         try {
             $acceptFields = [
@@ -45,6 +46,7 @@ class DocumentController extends Controller
 
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
+                Log::error('User/DocumentController Shipment No không tồn tại.');
                 return redirect()->route('user.scan.shipment');
             }
 
@@ -79,7 +81,7 @@ class DocumentController extends Controller
 
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
-                return back()->withErrors('Shipment ID không tồn tại. Vui lòng kiểm tra lại!')->withInput();
+                return back()->withErrors('Shipment No không tồn tại. Vui lòng kiểm tra lại!')->withInput();
             }
 
             $document = $this->documentService->find($result['document_id']);

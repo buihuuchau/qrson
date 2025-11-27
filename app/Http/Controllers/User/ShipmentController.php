@@ -63,6 +63,16 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $validator = Validator::make($result, (new shipmentRequest())->rules(), (new shipmentRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
             $shipment = $this->shipmentService->find($result['shipment_id']);
 
             if (!empty($shipment)) {

@@ -31,7 +31,7 @@ class codeProductAddRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'shipment_id.required' => 'Shipment ID không được để trống.',
+            'shipment_id.required' => 'Shipment No không được để trống.',
             'document_id.required' => 'Số chứng từ không được để trống.',
             'code_product_id.required' => 'Mã sản phẩm không được để trống.',
             'code_product_id.size' => 'Mã sản phẩm không đúng.',

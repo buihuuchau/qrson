@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class documentAddRequest extends FormRequest
+class codeProductScanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class documentAddRequest extends FormRequest
         return [
             'shipment_id' => 'required',
             'document_id' => 'required',
-            'total' => 'required|numeric|min:1',
         ];
     }
 
@@ -33,9 +32,6 @@ class documentAddRequest extends FormRequest
         return [
             'shipment_id.required' => 'Shipment No không được để trống.',
             'document_id.required' => 'Số chứng từ không được để trống.',
-            'total.required' => 'Số lượng mã của Số chứng từ không được để trống.',
-            'total.numeric'  => 'Số lượng mã của Số chứng từ phải là số.',
-            'total.min'      => 'Số lượng mã của Số chứng từ phải lớn hơn hoặc bằng 0.',
         ];
     }
 }

@@ -33,7 +33,10 @@
         @csrf
         <input type="hidden" name="shipment_id" value="{{ $shipment->id }}">
         <div class="mb-1">
-            <label for="document_id" class="form-label">Nhập Số chứng từ cho Shipment No: {{ $shipment->id }}</label>
+            <label for="document_id" class="form-label">
+                Nhập Số chứng từ cho<br>
+                Shipment No: {{ $shipment->id }}
+            </label>
             <input type="text" class="form-control" id="document_id" name="document_id" value="{{ old('document_id') }}"
                 required>
         </div>
@@ -148,7 +151,6 @@
                                 });
                                 $('#loadingOverlay').hide();
                             }
-
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON

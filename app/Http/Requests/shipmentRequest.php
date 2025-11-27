@@ -29,7 +29,7 @@ class shipmentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'shipment_id.required' => 'Shipment ID không được để trống.',
+            'shipment_id.required' => 'Shipment No không được để trống.',
         ];
     }
 }

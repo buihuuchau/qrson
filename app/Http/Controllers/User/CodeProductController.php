@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\codeProductAddRequest;
 use App\Http\Requests\codeProductDeleteRequest;
+use App\Http\Requests\codeProductScanRequest;
 use App\Services\CodeProductService;
 use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
@@ -36,7 +37,7 @@ class CodeProductController extends Controller
         $this->codeProductTempService = $codeProductTempService;
     }
 
-    public function scanCodeProduct(Request $request)
+    public function scanCodeProduct(codeProductScanRequest $request)
     {
         try {
             $acceptFields = [
@@ -47,12 +48,14 @@ class CodeProductController extends Controller
 
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
-                return redirect()->route('user.scan.shipment')->withErrors('Shipment No không tồn tại.');
+                Log::error('User/CodeProductController Shipment No không tồn tại.');
+                return redirect()->route('user.scan.shipment');
             }
 
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
-                return redirect()->route('user.scan.shipment')->withErrors('Số chứng từ không tồn tại.');
+                Log::error('User/CodeProductController Số chứng từ không tồn tại.');
+                return redirect()->route('user.scan.shipment');
             }
 
             $filterCodeProductTemp = [
@@ -105,10 +108,10 @@ class CodeProductController extends Controller
                     return response()->json([
                         'status' => false,
                         'status_code' => 404,
-                        'message' => 'Shipment ID không tồn tại. Vui lòng kiểm tra lại!',
+                        'message' => 'Shipment No không tồn tại. Vui lòng kiểm tra lại!',
                     ], 200);
                 } else {
-                    return back()->withErrors('Shipment ID không tồn tại. Vui lòng kiểm tra lại!')->withInput();
+                    return back()->withErrors('Shipment No không tồn tại. Vui lòng kiểm tra lại!')->withInput();
                 }
             }
 
@@ -128,10 +131,10 @@ class CodeProductController extends Controller
                     return response()->json([
                         'status' => false,
                         'status_code' => 409,
-                        'message' => 'Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!',
+                        'message' => 'Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!',
                     ], 200);
                 } else {
-                    return back()->withErrors('Số chứng từ không thuộc về Shipment ID đã chọn. Vui lòng kiểm tra lại!')->withInput();
+                    return back()->withErrors('Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!')->withInput();
                 }
             } elseif ($document->status == 'done') {
                 if ($scan == 'yes') {
@@ -175,7 +178,7 @@ class CodeProductController extends Controller
                 'shipment_id' => $shipment->id,
                 'document_id' => $document->id,
                 'scan' => $scan,
-                'created_by' => (Auth::guard('api')->user()->name ?? Auth::user()->name) . ' - ' . (Auth::guard('api')->user()->phone ?? Auth::user()->phone),
+                'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
             ];
             $createCodeProductTemp = $this->codeProductTempService->create($valueCreateCodeProductTemp);
 
@@ -184,7 +187,7 @@ class CodeProductController extends Controller
             ];
             $updateDocument = $this->documentService->update($document->id, $valueUpdateDocument);
             if ($createCodeProductTemp && $updateDocument) {
-                $createCodeProductTemp['time_created_at'] = Carbon::parse($createCodeProductTemp->created_at)->format('Y-m-d H:i:s');
+                $createCodeProductTemp['created_at_format'] = Carbon::parse($createCodeProductTemp->created_at)->format('Y-m-d H:i:s');
                 DB::commit();
                 if ($scan == 'yes') {
                     return response()->json([
@@ -250,7 +253,7 @@ class CodeProductController extends Controller
                     'status' => false,
                     'status_code' => 404,
                     'message' => 'Mã sản phẩm không tồn tại',
-                ], 404);
+                ], 200);
             }
 
             DB::beginTransaction();
@@ -280,7 +283,7 @@ class CodeProductController extends Controller
                     'status' => false,
                     'status_code' => 409,
                     'message' => 'Xóa mã sản phẩm thất bại',
-                ], 409);
+                ], 200);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
