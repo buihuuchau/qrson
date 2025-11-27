@@ -143,7 +143,7 @@ class CodeProductController extends Controller
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
-                'messages' => 'Lỗi hệ thống.',
+                'message' => 'Lỗi hệ thống.',
             ], 500);
         }
     }
@@ -210,7 +210,7 @@ class CodeProductController extends Controller
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
-                'messages' => 'Lỗi hệ thống.',
+                'message' => 'Lỗi hệ thống.',
             ], 500);
         }
     }
