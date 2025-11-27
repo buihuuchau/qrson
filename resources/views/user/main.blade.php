@@ -57,9 +57,7 @@
     </div>
 
     <!-- Debug Console -->
-    {{-- <div id="debugLog">
-        <b>📟 DEBUG LOG:</b><br>
-    </div> --}}
+    {{-- <div id="debugLog"></div> --}}
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -73,15 +71,17 @@
     <!-- Thư viện quét QR / Barcode -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
+    <!-- Js quét QR / Barcode -->
+    <script src="{{ asset('user/js/scanQr.js') }}"></script>
+
+     <!-- Js đếm ngược rồi tự chạy -->
+    <script src="{{ asset('user/js/countDownFunction.js') }}"></script>
+
     <script>
         function screenLog(message) {
             // $('#debugLog').append('<div>👉 ' + message + '</div>');
             // $('#debugLog').scrollTop($('#debugLog')[0].scrollHeight);
         }
-
-        $(document).ready(function() {
-            // screenLog("Trang main đã load xong.");
-        });
     </script>
 
     @yield('custom_script')

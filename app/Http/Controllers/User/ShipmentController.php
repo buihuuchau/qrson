@@ -39,6 +39,7 @@ class ShipmentController extends Controller
     {
         try {
             $filterShipment = [
+                'status' => 'pending',
                 'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
                 'orderBy' => 'created_at',
                 'get' => [
@@ -96,7 +97,7 @@ class ShipmentController extends Controller
         }
     }
 
-    public function add(shipmentRequest $request)
+    public function add(Request $request)
     {
         try {
             $acceptFields = [
@@ -104,9 +105,23 @@ class ShipmentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $validator = Validator::make($result, (new shipmentRequest())->rules(), (new shipmentRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
             $checkShipment = $this->shipmentService->find($result['shipment_id']);
             if (!empty($checkShipment)) {
-                return back()->withErrors('Shipment No đã tồn tại, không thể tạo mới!');
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => 'Shipment No đã tồn tại, không thể tạo mới!',
+                ], 200);
             } else {
                 $valueCreateShipment = [
                     'id' => $result['shipment_id'],
@@ -115,14 +130,29 @@ class ShipmentController extends Controller
                 ];
                 $createShipment = $this->shipmentService->create($valueCreateShipment);
                 if ($createShipment) {
-                    return redirect()->route('user.scan.document', ['shipment_id' => $createShipment->id])->with('success', 'Tạo mới Shipment No thành công.');
+                    return response()->json([
+                        'status' => true,
+                        'status_code' => 201,
+                        'message' => 'Tạo mới Shipment No thành công.',
+                        'data' => [
+                            'shipment' => $createShipment,
+                        ],
+                    ], 201);
                 } else {
-                    return back()->withErrors('Tạo mới Shipment No thất bại.');
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => 'Tạo mới Shipment No thất bại.',
+                    ], 200);
                 }
             }
         } catch (\Throwable $th) {
             Log::error('User/ShipmentController add error: ' . $th->getMessage());
-            return back()->withErrors('Lỗi hệ thống.');
+            return response()->json([
+                'status' => false,
+                'status_code' => 500,
+                'message' => 'Lỗi hệ thống.',
+            ], 500);
         }
     }
 
