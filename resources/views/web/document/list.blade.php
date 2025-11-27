@@ -8,7 +8,6 @@
 @endsection
 @section('content')
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
@@ -18,19 +17,17 @@
                                 Shipment ID: {{ $shipment_id }}
                             </h3>
                         @endif
-                    </div><!-- /.col -->
+                    </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment No</a></li>
                             <li class="breadcrumb-item active">Số chứng từ</li>
                         </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
@@ -41,7 +38,7 @@
                                 <form class="col-md-12 col-sm-12 d-flex row" action="{{ route('web.document.list') }}"
                                     method="get">
                                     <div class="col-md-3 col-sm-6">
-                                        <label for="shipment_id" class="form-label">Shipment ID</label>
+                                        <label for="shipment_id" class="form-label">Shipment No</label>
                                         <input id="shipment_id" type="text" class="form-control" name="shipment_id"
                                             value="{{ request()->query('shipment_id') }}">
                                     </div>
@@ -51,12 +48,12 @@
                                             value="{{ request()->query('document_id') }}">
                                     </div>
                                     <div class="col-md-3 col-sm-6">
-                                        <label class="form-label">Thời gian quét từ</label>
+                                        <label class="form-label">Thời gian nhập từ</label>
                                         <input id="from" type="datetime-local" class="form-control" name="from"
                                             value="{{ request()->query('from') }}"><br>
                                     </div>
                                     <div class="col-md-3 col-sm-6">
-                                        <label class="form-label">Thời gian quét đến</label>
+                                        <label class="form-label">Thời gian nhập đến</label>
                                         <input id="to" type="datetime-local" class="form-control" name="to"
                                             value="{{ request()->query('to') }}">
                                     </div>
@@ -71,11 +68,11 @@
                                             <option value="" disabled selected>-- Chọn --</option>
                                             <option value="pending"
                                                 {{ request()->query('status') == 'pending' ? 'selected' : '' }}>
-                                                Chưa hoàn thành
+                                                Chưa xong
                                             </option>
                                             <option value="done"
                                                 {{ request()->query('status') == 'done' ? 'selected' : '' }}>
-                                                Đã hoàn thành
+                                                Xong
                                             </option>
                                         </select>
                                     </div>
@@ -85,13 +82,13 @@
                                     </div>
                                 </form>
                             </div>
-                            <!-- /.card-header -->
+
                             <div class="card-body">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã nhập</th>
                                             <th>Số mã tất cả</th>
@@ -116,12 +113,12 @@
                                                         @php
                                                             $draft = 1;
                                                         @endphp
-                                                        Chưa hoàn thành
+                                                        Chưa xong
                                                     @else
                                                         @php
                                                             $draft = 0;
                                                         @endphp
-                                                        Đã hoàn thành
+                                                        Đã xong
                                                     @endif
                                                 </td>
                                                 <td>
@@ -140,8 +137,8 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Số chứng từ</th>
                                             <th>Số mã đã nhập</th>
                                             <th>Số mã tất cả</th>
@@ -156,16 +153,11 @@
                                     {{ $documents->appends($_GET)->links('web.layouts.pagination_vi') }}
                                 </div>
                             </div>
-                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card -->
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row (main row) -->
-            </div><!-- /.container-fluid -->
+            </div>
         </section>
-        <!-- /.content -->
     </div>
 @endsection
 @section('custom_script')
@@ -177,7 +169,7 @@
             Swal.fire({
                 title: "Xác nhận xóa?",
                 text: "Số chứng từ:  " + document_id +
-                    " và các mã sản phẩm đi kèm sẽ bị xóa và không thể khôi phục!",
+                    " và các Mã sản phẩm đi kèm sẽ bị xóa và không thể khôi phục!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -196,25 +188,34 @@
                         },
                         dataType: "json",
                         success: function(response) {
-                            let message = response && response.message ? response.message :
-                                'Xóa Số chứng từ thành công';
-                            Swal.fire({
-                                icon: "success",
-                                title: "Thành công",
-                                text: message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            button.closest('tr').remove();
-                            $("#example1 tbody tr").each(function(index) {
-                                $(this).find("td:first").text(index + 1);
-                            });
-                            $('#loadingOverlay').hide();
+                            if (response.status_code == 200) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Thành công",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                button.closest('tr').remove();
+                                $("#example1 tbody tr").each(function(index) {
+                                    $(this).find("td:first").text(index + 1);
+                                });
+                                $('#loadingOverlay').hide();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Thất bại",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                $('#loadingOverlay').hide();
+                            }
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
                                 xhr.responseJSON.message :
-                                'Đã có lỗi xảy ra';
+                                'Đã có lỗi xảy ra.';
                             Swal.fire({
                                 icon: "error",
                                 title: "Lỗi",

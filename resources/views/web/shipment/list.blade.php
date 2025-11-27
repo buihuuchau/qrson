@@ -71,7 +71,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <!-- /.card-header -->
+
                             <div class="card-body">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
@@ -170,25 +170,34 @@
                         },
                         dataType: "json",
                         success: function(response) {
-                            let message = response && response.message ? response.message :
-                                'Xóa Shipment ID thành công.';
-                            Swal.fire({
-                                icon: "success",
-                                title: "Thành công",
-                                text: message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            button.closest('tr').remove();
-                            $("#example1 tbody tr").each(function(index) {
-                                $(this).find("td:first").text(index + 1);
-                            });
-                            $('#loadingOverlay').hide();
+                            if (response && response.status_code == 200) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Thành công",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                button.closest('tr').remove();
+                                $("#example1 tbody tr").each(function(index) {
+                                    $(this).find("td:first").text(index + 1);
+                                });
+                                $('#loadingOverlay').hide();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Thất bại",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                $('#loadingOverlay').hide();
+                            }
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
                                 xhr.responseJSON.message :
-                                'Đã có lỗi xảy ra';
+                                'Đã có lỗi xảy ra.';
                             Swal.fire({
                                 icon: "error",
                                 title: "Lỗi",

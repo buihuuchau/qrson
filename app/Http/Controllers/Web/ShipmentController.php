@@ -101,7 +101,7 @@ class ShipmentController extends Controller
                     'status' => false,
                     'status_code' => 409,
                     'message' => 'Đã có Số chứng từ liên quan đến Shipment No này, không thể xóa!',
-                ], 409);
+                ], 200);
             } else {
                 $deleteShipment = $this->shipmentService->delete($shipment->id);
                 if ($deleteShipment != false) {
@@ -115,7 +115,7 @@ class ShipmentController extends Controller
                         'status' => false,
                         'status_code' => 409,
                         'message' => 'Xóa Shipment No thất bại.',
-                    ], 409);
+                    ], 200);
                 }
             }
         } catch (\Throwable $th) {

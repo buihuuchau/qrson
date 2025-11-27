@@ -48,6 +48,10 @@ class CodeProductController extends Controller
 
             if (!empty($result['document_id'])) {
                 $filterCodeProduct['document_id'] = $result['document_id'];
+                $document = $this->documentService->find($filterCodeProduct['document_id']);
+                if (!empty($document)) {
+                    $data['document'] = $document;
+                }
             }
 
             if (!empty($result['code_product_id'])) {
@@ -101,7 +105,7 @@ class CodeProductController extends Controller
             $data['codeProducts'] = $codeProducts;
             return view('web.codeProduct.list', $data);
         } catch (\Throwable $th) {
-            Log::error('CodeProductController list error: ' . $th->getMessage());
+            Log::error('Web/CodeProductController list error: ' . $th->getMessage());
             abort(404);
         }
     }
@@ -119,8 +123,8 @@ class CodeProductController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Mã sản phẩm không tồn tại',
-                ], 404);
+                    'message' => 'Mã sản phẩm không tồn tại.',
+                ], 200);
             }
 
             DB::beginTransaction();
@@ -142,19 +146,22 @@ class CodeProductController extends Controller
                 return response()->json([
                     'status' => true,
                     'status_code' => 200,
-                    'message' => 'Xóa mã sản phẩm thành công',
+                    'message' => 'Xóa mã sản phẩm thành công.',
+                    'data' => [
+                        'document' => $updateDocument,
+                    ]
                 ], 200);
             } else {
                 DB::rollBack();
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
-                    'message' => 'Xóa mã sản phẩm thất bại',
-                ], 409);
+                    'message' => 'Xóa mã sản phẩm thất bại.',
+                ], 200);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('CodeProductController delete error: ' . $th->getMessage());
+            Log::error('Web/CodeProductController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,

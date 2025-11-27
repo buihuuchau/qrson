@@ -8,15 +8,14 @@
 @endsection
 @section('content')
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                    </div><!-- /.col -->
+                    </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('web.shipment.list') }}">Shipment No</a></li>
                             @if (!empty(request()->query('document_id')))
                                 <li class="breadcrumb-item">
                                     <a
@@ -27,13 +26,11 @@
                             @endif
                             <li class="breadcrumb-item active">Mã sản phẩm</li>
                         </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
@@ -41,11 +38,20 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title mb-3">Danh sách các Mã sản phẩm</h3>
+                                @if (!empty($document))
+                                    <div class="d-flex row col-md-12 col-sm-12 mb-3">
+                                        <div class="col-md-6 col-sm-12">Số mã đã quét: <span id="document_total_current">
+                                                {{ $document->total_current }}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">Số mã tất cả: {{ $document->total }}</div>
+                                    </div>
+                                @endif
                                 <form class="col-md-12 col-sm-12 d-flex row" action="{{ route('web.code-product.list') }}"
                                     method="get">
                                     <input type="hidden" name="draft" value="true">
                                     <div class="col-md-2 col-sm-6">
-                                        <label for="shipment_id" class="form-label">Shipment ID</label>
+                                        <label for="shipment_id" class="form-label">Shipment No</label>
                                         <input id="shipment_id" type="text" class="form-control" name="shipment_id"
                                             value="{{ request()->query('shipment_id') }}">
                                     </div>
@@ -60,7 +66,7 @@
                                             value="{{ request()->query('code_product_id') }}">
                                     </div>
                                     <div class="col-md-2 col-sm-6">
-                                        <label for="created_by" class="form-label">Người nhập</label>
+                                        <label for="created_by" class="form-label">Người quét</label>
                                         <input id="created_by" type="text" class="form-control" name="created_by"
                                             value="{{ request()->query('created_by') }}">
                                     </div>
@@ -107,17 +113,17 @@
                                     </div>
                                 </form>
                             </div>
-                            <!-- /.card-header -->
+
                             <div class="card-body">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Số chứng từ</th>
                                             <th>Mã sản phẩm</th>
                                             <th>Thời gian quét</th>
-                                            <th>Người thực hiện</th>
+                                            <th>Người quét</th>
                                             <th>Thực hiện manual</th>
                                             @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
                                                 <th>Thao tác</th>
@@ -150,12 +156,12 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Số chứng từ</th>
                                             <th>Mã sản phẩm</th>
                                             <th>Thời gian quét</th>
-                                            <th>Người thực hiện</th>
+                                            <th>Người quét</th>
                                             <th>Thực hiện manual</th>
                                             @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
                                                 <th>Thao tác</th>
@@ -167,16 +173,11 @@
                                     {{ $codeProducts->appends($_GET)->links('web.layouts.pagination_vi') }}
                                 </div>
                             </div>
-                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card -->
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row (main row) -->
-            </div><!-- /.container-fluid -->
+            </div>
         </section>
-        <!-- /.content -->
     </div>
 @endsection
 @section('custom_script')
@@ -206,25 +207,36 @@
                         },
                         dataType: "json",
                         success: function(response) {
-                            let message = response && response.message ? response.message :
-                                'Xóa Mã sản phẩm thành công';
-                            Swal.fire({
-                                icon: "success",
-                                title: "Thành công",
-                                text: message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            button.closest('tr').remove();
-                            $("#example1 tbody tr").each(function(index) {
-                                $(this).find("td:first").text(index + 1);
-                            });
-                            $('#loadingOverlay').hide();
+                            if (response.status_code == 200) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Thành công",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                let documentTotalCurrent = response.data.document.total_current;
+                                $("#document_total_current").text(documentTotalCurrent);
+                                button.closest('tr').remove();
+                                $("#example1 tbody tr").each(function(index) {
+                                    $(this).find("td:first").text(index + 1);
+                                });
+                                $('#loadingOverlay').hide();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Thất bại",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                $('#loadingOverlay').hide();
+                            }
                         },
                         error: function(xhr, status, error) {
                             let message = xhr.responseJSON && xhr.responseJSON.message ?
                                 xhr.responseJSON.message :
-                                'Đã có lỗi xảy ra';
+                                'Đã có lỗi xảy ra.';
                             Swal.fire({
                                 icon: "error",
                                 title: "Lỗi",

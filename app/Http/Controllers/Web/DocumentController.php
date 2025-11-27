@@ -87,7 +87,7 @@ class DocumentController extends Controller
             $data['documents'] = $documents;
             return view('web.document.list', $data);
         } catch (\Throwable $th) {
-            Log::error('DocumentController list error: ' . $th->getMessage());
+            Log::error('Web/DocumentController list error: ' . $th->getMessage());
             abort(404);
         }
     }
@@ -105,14 +105,14 @@ class DocumentController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Số chứng từ không tồn tại',
-                ], 404);
+                    'message' => 'Số chứng từ không tồn tại.',
+                ], 200);
             } elseif ($document->status == 'done') {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
-                    'message' => 'Số chứng từ đã được khóa, không thể xóa',
-                ], 409);
+                    'message' => 'Số chứng từ đã được khóa, không thể xóa.',
+                ], 200);
             }
 
             DB::beginTransaction();
@@ -157,19 +157,19 @@ class DocumentController extends Controller
                 return response()->json([
                     'status' => true,
                     'status_code' => 200,
-                    'message' => 'Xóa Số chứng từ thành công',
+                    'message' => 'Xóa Số chứng từ thành công.',
                 ], 200);
             } else {
                 DB::rollBack();
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
-                    'message' => 'Xóa Số chứng từ thất bại',
-                ], 409);
+                    'message' => 'Xóa Số chứng từ thất bại.',
+                ], 200);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('DocumentController delete error: ' . $th->getMessage());
+            Log::error('Web/DocumentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
