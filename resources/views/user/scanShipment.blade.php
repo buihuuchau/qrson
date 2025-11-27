@@ -139,10 +139,6 @@
                                         timer: 1500
                                     });
                                     button.closest('tr').remove();
-                                    $("#example1 tbody tr").each(function(index) {
-                                        $(this).find("td:first").text(index +
-                                            1);
-                                    });
                                     $('#loadingOverlay').hide();
                                 } else {
                                     Swal.fire({

@@ -43,8 +43,13 @@ class DocumentController extends Controller
             ];
             $result = Arr::only(request()->all(), $acceptFields);
 
+            $shipment = $this->shipmentService->find($result['shipment_id']);
+            if (empty($shipment)) {
+                return redirect()->route('user.scan.shipment');
+            }
+
             $filterDocument = [
-                'shipment_id' => $result['shipment_id'],
+                'shipment_id' => $shipment->id,
                 'status' => 'pending',
                 'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
                 'orderBy' => 'created_at',
@@ -54,7 +59,7 @@ class DocumentController extends Controller
             ];
             $documents = $this->documentService->filter($filterDocument);
             $data['documents'] = $documents;
-            $data['shipment_id'] = $result['shipment_id'];
+            $data['shipment'] = $shipment;
             return view('user.scanDocument', $data);
         } catch (\Throwable $th) {
             Log::error('User/DocumentController scan error: ' . $th->getMessage());
@@ -79,7 +84,7 @@ class DocumentController extends Controller
 
             $document = $this->documentService->find($result['document_id']);
             if (!empty($document)) {
-                return back()->withErrors('Số chứng từ đã tồn tại, không thể tạo mới!')->withInput();
+                return redirect()->route('user.scan.codeProduct', ['shipment_id' => $shipment->id, 'document_id' => $document->id])->withErrors('Số chứng từ đã tồn tại!');
             }
 
             DB::beginTransaction();
@@ -135,13 +140,13 @@ class DocumentController extends Controller
                     'status' => false,
                     'status_code' => 404,
                     'message' => 'Số chứng từ không tồn tại',
-                ], 404);
+                ], 200);
             } elseif ($document->status == 'done') {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
                     'message' => 'Số chứng từ đã hoàn tất, không thể xóa',
-                ], 409);
+                ], 200);
             }
 
             DB::beginTransaction();
@@ -194,7 +199,7 @@ class DocumentController extends Controller
                     'status' => false,
                     'status_code' => 409,
                     'message' => 'Xóa Số chứng từ thất bại',
-                ], 409);
+                ], 200);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
