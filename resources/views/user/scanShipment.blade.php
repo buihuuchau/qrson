@@ -58,7 +58,7 @@
                     }
                     screenLog("👉 Chuẩn bị gọi API với shipment_id: " + resultShipmentId);
                     $.ajax({
-                        url: "/user/shipment-check",
+                        url: "{{ route('user.shipment.check') }}",
                         type: "get",
                         data: {
                             shipment_id: resultShipmentId,
@@ -172,7 +172,7 @@
             window.addShipment = function(resultShipmentId) {
                 $('#loadingOverlay').css('display', 'flex');
                 $.ajax({
-                    url: "/user/shipment-add",
+                    url: "{{ route('user.shipment.add') }}",
                     type: "post",
                     data: {
                         shipment_id: resultShipmentId,

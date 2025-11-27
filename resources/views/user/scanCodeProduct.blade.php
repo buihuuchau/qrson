@@ -123,7 +123,7 @@
                     }
                     screenLog("👉 Chuẩn bị gọi API với code_product_id: " + resultCodeProductId);
                     $.ajax({
-                        url: "/user/code-product-add",
+                        url: "{{ route('user.code-product.add') }}",
                         type: "post",
                         data: {
                             shipment_id: {{ $shipment->id }},
@@ -139,7 +139,8 @@
                                 alert("chau da den day1");
                                 $("#apiResult").html(html);
                                 alert("chau da den day2");
-                                let document_total_current = response.data.document['total_current'];
+                                let document_total_current = response.data.document[
+                                    'total_current'];
                                 let document_total = response.data.document['total'];
                                 $("#document_total_current").text(document_total_current);
                                 alert("chau da den day3");
