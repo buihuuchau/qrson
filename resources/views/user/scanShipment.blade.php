@@ -20,15 +20,13 @@
             <thead>
                 <tr>
                     <th>Shipment No</th>
-                    <th>Thời gian quét</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($shipments as $key => $shipment)
                     <tr>
-                        <td>{{ $shipment->id }}</td>
-                        <td>{{ $shipment->created_at }}</td>
+                        <td><b>{{ $shipment->id }}</b><br>{{ $shipment->created_at }}</td>
                         <td>
                             @if ($shipment->status != 'done' && $shipment->document->count() == 0)
                                 <button class="btn btn-danger clearShipment" title="Xóa"

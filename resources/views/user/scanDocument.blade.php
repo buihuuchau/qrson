@@ -53,15 +53,13 @@
             <thead>
                 <tr>
                     <th>Số chứng từ</th>
-                    <th>Thời gian nhập</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($documents as $key => $document)
                     <tr>
-                        <td>{{ $document->id }}</td>
-                        <td>{{ $document->created_at }}</td>
+                        <td><b>{{ $document->id }}</b><br>{{ $document->created_at }}</td>
                         <td>
                             <button class="btn btn-danger clearDocument" title="Xóa"
                                 data-document-id="{{ $document->id }}"><i class="fas fa-trash"></i></button>

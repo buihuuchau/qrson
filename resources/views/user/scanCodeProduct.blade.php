@@ -81,7 +81,6 @@
             <thead>
                 <tr>
                     <th>Mã sản phẩm</th>
-                    <th>Thời gian quét</th>
                     <th>Manual</th>
                     <th></th>
                 </tr>
@@ -89,8 +88,7 @@
             <tbody>
                 @foreach ($codeProducts as $key => $codeProduct)
                     <tr>
-                        <td>{{ $codeProduct->id }}</td>
-                        <td>{{ $codeProduct->created_at }}</td>
+                        <td><b>{{ $codeProduct->id }}</b><br>{{ $codeProduct->created_at }}</td>
                         <td>
                             @if ($codeProduct->scan == 'no')
                                 X
@@ -136,14 +134,12 @@
                                 let html = `
                                     <h5 class="text-success mb-3">${response.message}</h5>
                                 `;
-                                alert("chau da den day1");
                                 $("#apiResult").html(html);
-                                alert("chau da den day2");
+
                                 let document_total_current = response.data.document[
                                     'total_current'];
                                 let document_total = response.data.document['total'];
                                 $("#document_total_current").text(document_total_current);
-                                alert("chau da den day3");
                                 if (document_total_current == document_total) {
                                     $("#formAdd").addClass('d-none');
                                     $("#btnConfirmSubmit").removeClass('d-none');
@@ -154,8 +150,7 @@
                                     'created_at_format'];
                                 let rowHtml = `
                                     <tr>
-                                        <td>${codeProductId}</td>
-                                        <td>${createdAtFormat}</td>
+                                        <td><b>${codeProductId}</b></br>${createdAtFormat}</td>
                                         <td></td>
                                         <td>
                                             <button class="btn btn-danger clearCodeProduct" title="Xóa"
@@ -166,6 +161,7 @@
                                 `;
                                 $('#example1 tbody').prepend(rowHtml);
                                 $('#loadingOverlay').hide();
+                                $('#btnStartScan').click();
                             } else {
                                 screenLog(
                                     "✅ Tạo Mã sản phẩm không thành công, nên nhập Mã sản phẩm thủ công"
