@@ -1,41 +1,38 @@
 @extends('web.layouts.main')
 @section('title')
-    <title>Danh sách Shipment</title>
+    <title>Danh sách Shipment No</title>
 @endsection
 @section('custom_css')
     {{-- custom-style --}}
 @endsection
 @section('content')
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Shipment</h1>
-                    </div><!-- /.col -->
+                        <h1 class="m-0">Shipment No</h1>
+                    </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="">Shipment</a></li>
+                            <li class="breadcrumb-item"><a href="">Shipment No</a></li>
                         </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title mb-3">Danh sách các Shipment ID</h3>
+                                <h3 class="card-title mb-3">Danh sách các Shipment No</h3>
                                 <form class="col-md-12 col-sm-12 d-flex row" action="{{ route('web.shipment.list') }}"
                                     method="get">
                                     <div class="col-md-2 col-sm-6">
-                                        <label for="shipment_id" class="form-label">Shipment ID</label>
+                                        <label for="shipment_id" class="form-label">Shipment No</label>
                                         <input id="shipment_id" type="text" class="form-control" name="shipment_id"
                                             value="{{ request()->query('shipment_id') }}">
                                     </div>
@@ -60,11 +57,11 @@
                                             <option value="" disabled selected>-- Chọn --</option>
                                             <option value="pending"
                                                 {{ request()->query('status') == 'pending' ? 'selected' : '' }}>
-                                                Chưa hoàn thành
+                                                Chưa xong
                                             </option>
                                             <option value="done"
                                                 {{ request()->query('status') == 'done' ? 'selected' : '' }}>
-                                                Đã hoàn thành
+                                                Xong
                                             </option>
                                         </select>
                                     </div>
@@ -79,8 +76,8 @@
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Người quét</th>
                                             <th>Thời gian quét</th>
                                             <th>Trạng thái</th>
@@ -96,9 +93,9 @@
                                                 <td>{{ $shipment->created_at }}</td>
                                                 <td>
                                                     @if ($shipment->status == 'pending')
-                                                        Chưa hoàn thành
+                                                        Chưa xong
                                                     @else
-                                                        Đã hoàn thành
+                                                        Xong
                                                     @endif
                                                 </td>
                                                 <td class="d-flex">
@@ -126,8 +123,8 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Số thứ tự</th>
-                                            <th>Shipment ID</th>
+                                            <th>STT</th>
+                                            <th>Shipment No</th>
                                             <th>Người quét</th>
                                             <th>Thời gian quét</th>
                                             <th>Trạng thái</th>
@@ -139,16 +136,11 @@
                                     {{ $shipments->appends($_GET)->links('web.layouts.pagination_vi') }}
                                 </div>
                             </div>
-                            <!-- /.card-body -->
                         </div>
-                        <!-- /.card -->
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row (main row) -->
-            </div><!-- /.container-fluid -->
+            </div>
         </section>
-        <!-- /.content -->
     </div>
 @endsection
 @section('custom_script')
@@ -159,7 +151,7 @@
             let shipment_id = button.data('shipment-id');
             Swal.fire({
                 title: "Xác nhận xóa?",
-                text: "Shipment ID:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
+                text: "Shipment No:  " + shipment_id + " sẽ bị xóa và không thể khôi phục!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -179,7 +171,7 @@
                         dataType: "json",
                         success: function(response) {
                             let message = response && response.message ? response.message :
-                                'Xóa Shipment ID thành công';
+                                'Xóa Shipment ID thành công.';
                             Swal.fire({
                                 icon: "success",
                                 title: "Thành công",

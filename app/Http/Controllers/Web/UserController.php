@@ -39,7 +39,7 @@ class UserController extends Controller
             if (!empty($result['role'])) {
                 $filterUser['role'] = $result['role'];
             }
-            
+
             $filterUser['orderBy'] = 'id';
 
             $filterUser['get'] = [
@@ -49,7 +49,7 @@ class UserController extends Controller
             $data['users'] = $users;
             return view('web.user.list', $data);
         } catch (\Throwable $th) {
-            Log::error('UserController list error: ' . $th->getMessage());
+            Log::error('Web/UserController list error: ' . $th->getMessage());
             abort(404);
         }
     }
@@ -84,10 +84,10 @@ class UserController extends Controller
             if ($createUser != false) {
                 return back()->with('success', 'Thêm Nhân viên thành công.');
             } else {
-                return back()->withErrors('Thêm Nhân viên thất bại')->withInput();
+                return back()->withErrors('Thêm Nhân viên thất bại.')->withInput();
             }
         } catch (\Throwable $th) {
-            Log::error('UserController delete error: ' . $th->getMessage());
+            Log::error('Web/UserController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
@@ -117,10 +117,10 @@ class UserController extends Controller
             if ($updateUser != false) {
                 return back()->with('success', 'Chỉnh sửa Nhân viên thành công.');
             } else {
-                return back()->withErrors('Chỉnh sửa Nhân viên thất bại')->withInput();
+                return back()->withErrors('Chỉnh sửa Nhân viên thất bại.')->withInput();
             }
         } catch (\Throwable $th) {
-            Log::error('UserController update error: ' . $th->getMessage());
+            Log::error('Web/UserController update error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
@@ -142,7 +142,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Nhân viên không tồn tại',
+                    'message' => 'Nhân viên không tồn tại.',
                 ], 404);
             }
 
@@ -151,17 +151,17 @@ class UserController extends Controller
                 return response()->json([
                     'status' => true,
                     'status_code' => 200,
-                    'message' => 'Xóa Nhân viên thành công',
+                    'message' => 'Xóa Nhân viên thành công.',
                 ], 200);
             } else {
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
-                    'message' => 'Xóa Nhân viên thất bại',
+                    'message' => 'Xóa Nhân viên thất bại.',
                 ], 409);
             }
         } catch (\Throwable $th) {
-            Log::error('UserController delete error: ' . $th->getMessage());
+            Log::error('Web/UserController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,

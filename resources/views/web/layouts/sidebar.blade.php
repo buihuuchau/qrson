@@ -24,7 +24,7 @@
                     <a href="{{ route('web.shipment.list') }}"
                         class="nav-link @if (in_array(\Route::currentRouteName(), ['web.shipment.list'])) active @endif">
                         <p>
-                            Shipment
+                            Shipment No
                         </p>
                     </a>
                 </li>

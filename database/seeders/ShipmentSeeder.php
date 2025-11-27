@@ -16,7 +16,7 @@ class ShipmentSeeder extends Seeder
         DB::table('shipments')->insert([
             'id' => '5100054985',
             'status' => 'done',
-            'created_by' => 'Nguyen Van A',
+            'created_by' => 'Tên User 1 - 0000000001',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -24,7 +24,7 @@ class ShipmentSeeder extends Seeder
             DB::table('shipments')->insert([
                 'id' => 'SHIPMENT' . $i,
                 'status' => 'pending',
-                'created_by' => 'Nguyen Van ' . $i,
+                'created_by' => 'Tên User '.$i.' - 000000000'.$i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

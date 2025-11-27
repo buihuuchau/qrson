@@ -17,7 +17,7 @@ class CodeProductTempSeeder extends Seeder
             'id' => 'n92500000000000000000000000',
             'shipment_id' => '5100054985',
             'document_id' => '5002756032',
-            'created_by' => 'Tên Admin - 0000000000',
+            'created_by' => 'Tên User 1 - 0000000001',
             'scan' => 'yes',
             'created_at' => now(),
             'updated_at' => now(),
@@ -29,7 +29,7 @@ class CodeProductTempSeeder extends Seeder
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'yes',
-                'created_by' => 'Tên User 2 - 0000000002',
+                'created_by' => 'Tên User 1 - 0000000001',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -40,7 +40,7 @@ class CodeProductTempSeeder extends Seeder
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'no',
-                'created_by' => 'Tên User 3 - 0000000003',
+                'created_by' => 'Tên User 1 - 0000000001',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

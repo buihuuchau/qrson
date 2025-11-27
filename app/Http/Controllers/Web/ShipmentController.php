@@ -68,7 +68,7 @@ class ShipmentController extends Controller
             $data['shipments'] = $shipments;
             return view('web.shipment.list', $data);
         } catch (\Throwable $th) {
-            Log::error('ShipmentController list error: ' . $th->getMessage());
+            Log::error('Web/ShipmentController list error: ' . $th->getMessage());
             abort(404);
         }
     }
@@ -86,7 +86,7 @@ class ShipmentController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 404,
-                    'message' => 'Shipment ID không tồn tại',
+                    'message' => 'Shipment No không tồn tại.',
                 ], 404);
             }
 
@@ -100,7 +100,7 @@ class ShipmentController extends Controller
                 return response()->json([
                     'status' => false,
                     'status_code' => 409,
-                    'message' => 'Đã có Số chứng từ liên quan đến Shipment ID này, không thể xóa!',
+                    'message' => 'Đã có Số chứng từ liên quan đến Shipment No này, không thể xóa!',
                 ], 409);
             } else {
                 $deleteShipment = $this->shipmentService->delete($shipment->id);
@@ -108,18 +108,18 @@ class ShipmentController extends Controller
                     return response()->json([
                         'status' => true,
                         'status_code' => 200,
-                        'message' => 'Xóa Shipment ID thành công',
+                        'message' => 'Xóa Shipment No thành công.',
                     ], 200);
                 } else {
                     return response()->json([
                         'status' => false,
                         'status_code' => 409,
-                        'message' => 'Xóa Shipment ID thất bại',
+                        'message' => 'Xóa Shipment No thất bại.',
                     ], 409);
                 }
             }
         } catch (\Throwable $th) {
-            Log::error('ShipmentController delete error: ' . $th->getMessage());
+            Log::error('Web/ShipmentController delete error: ' . $th->getMessage());
             return response()->json([
                 'status' => false,
                 'status_code' => 500,
