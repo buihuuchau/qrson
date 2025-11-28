@@ -124,8 +124,8 @@
                         url: "{{ route('user.code-product.add') }}",
                         type: "post",
                         data: {
-                            shipment_id: {{ $shipment->id }},
-                            document_id: {{ $document->id }},
+                            shipment_id: "{{ $shipment->id }}",
+                            document_id: "{{ $document->id }}",
                             code_product_id: resultCodeProductId,
                             _token: "{{ csrf_token() }}"
                         },

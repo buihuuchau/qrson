@@ -54,6 +54,10 @@ class CodeProductController extends Controller
 
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
+                if ($document->shioment_id != $shipment->id) {
+                    Log::error('User/CodeProductController Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!');
+                    return redirect()->route('user.scan.shipment');
+                }
                 Log::error('User/CodeProductController Số chứng từ không tồn tại.');
                 return redirect()->route('user.scan.shipment');
             }

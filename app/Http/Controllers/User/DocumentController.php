@@ -86,7 +86,10 @@ class DocumentController extends Controller
 
             $document = $this->documentService->find($result['document_id']);
             if (!empty($document)) {
-                return redirect()->route('user.scan.codeProduct', ['shipment_id' => $shipment->id, 'document_id' => $document->id])->withErrors('Số chứng từ đã tồn tại!');
+                if ($document->shipment_id != $shipment->id) {
+                    return back()->withErrors('Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!')->withInput();
+                }
+                return redirect()->route('user.scan.codeProduct', ['shipment_id' => $shipment->id, 'document_id' => $document->id])->withErrors('Số chứng từ đã tồn tại! Truy cập vào Mã sản phầm của chứng từ này...');
             }
 
             DB::beginTransaction();

@@ -46,7 +46,7 @@ class ShipmentController extends Controller
                     'paginate' => 50,
                 ],
             ];
-            $shipments = $this->shipmentService->filter($filterShipment, 'document');
+            $shipments = $this->shipmentService->filter($filterShipment);
             $data['shipments'] = $shipments;
             return view('user.scanShipment', $data);
         } catch (\Throwable $th) {
@@ -85,10 +85,6 @@ class ShipmentController extends Controller
                     'status' => true,
                     'status_code' => 200,
                     'message' => 'Shipment No đang tồn tại.',
-                    'data' => [
-                        'shipment' => $shipment,
-                        'documents' => $documents,
-                    ],
                 ], 200);
             } else {
                 return response()->json([
@@ -144,9 +140,6 @@ class ShipmentController extends Controller
                         'status' => true,
                         'status_code' => 201,
                         'message' => 'Tạo mới Shipment No thành công.',
-                        'data' => [
-                            'shipment' => $createShipment,
-                        ],
                     ], 201);
                 } else {
                     return response()->json([
