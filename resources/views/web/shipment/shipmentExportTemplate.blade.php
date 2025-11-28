@@ -15,7 +15,7 @@
                 <td>&nbsp;{{ $item->shipment_id }}</td>
                 <td>&nbsp;{{ $item->document_id }}</td>
                 <td>&nbsp;{{ $item->id }}</td>
-                <td>{{ $item->updated_at }}</td>
+                <td>{{ $item->created_at }}</td>
                 <td>{{ $item->created_by }}</td>
                 <td>
                     @if ($item->scan == 'no')
