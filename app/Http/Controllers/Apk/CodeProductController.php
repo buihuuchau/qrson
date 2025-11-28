@@ -86,9 +86,7 @@ class CodeProductController extends Controller
                 'document_id' => $document->id,
                 'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
                 'orderBy' => 'created_at',
-                'get' => [
-                    'paginate' => 50,
-                ],
+                'get' => true,
             ];
             $codeProducts = $this->codeProductTempService->filter($filterCodeProductTemp);
             return response()->json([
