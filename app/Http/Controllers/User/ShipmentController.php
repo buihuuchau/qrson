@@ -184,6 +184,12 @@ class ShipmentController extends Controller
                     'status_code' => 404,
                     'message' => 'Shipment No không tồn tại.',
                 ], 200);
+            } elseif ($shipment->created_by != Auth::user()->name . ' - ' . Auth::user()->phone) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 403,
+                    'message' => 'Shipment No này không phải do bạn tạo, không thể xóa!',
+                ], 200);
             } elseif ($shipment->status == 'done') {
                 return response()->json([
                     'status' => false,
@@ -273,6 +279,7 @@ class ShipmentController extends Controller
                     'scan' => $codeProductTemp->scan,
                     'created_by' => $codeProductTemp->created_by,
                     'created_at' => $codeProductTemp->created_at,
+                    'updated_at' => $codeProductTemp->updated_at,
                 ];
                 $createCodeProduct = $this->codeProductService->create($valueCreateCodeProduct);
                 if (!$createCodeProduct) {

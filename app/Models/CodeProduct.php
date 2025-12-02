@@ -12,6 +12,7 @@ class CodeProduct extends Model
     protected $table = 'code_products';
     public $incrementing = false; // vì id không phải auto-increment
     protected $keyType = 'string'; // id là string
+    public $timestamps = false;
 
     protected $fillable = [
         'id',
@@ -19,6 +20,8 @@ class CodeProduct extends Model
         'document_id',
         'scan',
         'created_by',
+        'created_at',
+        'updated_at',
     ];
 
     public function document()

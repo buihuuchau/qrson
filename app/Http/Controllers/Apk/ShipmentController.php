@@ -191,6 +191,12 @@ class ShipmentController extends Controller
                     'status_code' => 404,
                     'message' => 'Shipment No không tồn tại.',
                 ], 200);
+            } elseif ($shipment->created_by != Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 403,
+                    'message' => 'Shipment No này không phải do bạn tạo, không thể xóa!',
+                ], 200);
             } elseif ($shipment->status == 'done') {
                 return response()->json([
                     'status' => false,
@@ -247,16 +253,32 @@ class ShipmentController extends Controller
 
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
-                return back()->withErrors('Shipment No không tồn tại. Vui lòng kiểm tra lại!');
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 404,
+                    'messages' => 'Shipment No không tồn tại. Vui lòng kiểm tra lại!',
+                ], 200);
             }
 
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
-                return back()->withErrors('Số chứng từ không tồn tại. Vui lòng kiểm tra lại!');
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 404,
+                    'messages' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
+                ], 200);
             } elseif ($document->shipment_id != $shipment->id) {
-                return back()->withErrors('Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!');
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 409,
+                    'messages' => 'Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!',
+                ], 200);
             } elseif ($document->status == 'done') {
-                return back()->withErrors('Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!');
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 409,
+                    'messages' => 'Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!',
+                ], 200);
             }
 
             $filterCodeProductTemp = [
@@ -266,7 +288,11 @@ class ShipmentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
             if ($document->total_current != $document->total || count($codeProductTemps) != $document->total) {
-                return back()->withErrors('Số lượng Mã sản phẩm không khớp, không thể xác nhận lưu!');
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 409,
+                    'messages' => 'Số lượng Mã sản phẩm không khớp, không thể xác nhận lưu!',
+                ], 200);
             }
 
             DB::beginTransaction();
@@ -280,6 +306,7 @@ class ShipmentController extends Controller
                     'scan' => $codeProductTemp->scan,
                     'created_by' => $codeProductTemp->created_by,
                     'created_at' => $codeProductTemp->created_at,
+                    'updated_at' => $codeProductTemp->updated_at,
                 ];
                 $createCodeProduct = $this->codeProductService->create($valueCreateCodeProduct);
                 if (!$createCodeProduct) {

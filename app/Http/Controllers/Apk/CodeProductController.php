@@ -248,6 +248,12 @@ class CodeProductController extends Controller
                     'status_code' => 404,
                     'message' => 'Mã sản phẩm không tồn tại',
                 ], 200);
+            } elseif ($codeProductTemp->created_by != Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 403,
+                    'message' => 'Mã sản phẩm này không phải do bạn tạo, không thể xóa!',
+                ], 200);
             }
 
             DB::beginTransaction();

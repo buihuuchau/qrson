@@ -146,6 +146,12 @@ class DocumentController extends Controller
                     'status_code' => 404,
                     'message' => 'Số chứng từ không tồn tại',
                 ], 200);
+            } elseif ($document->created_by != Auth::user()->name . ' - ' . Auth::user()->phone) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 403,
+                    'message' => 'Số chứng từ này không phải do bạn tạo, không thể xóa!',
+                ], 200);
             } elseif ($document->status == 'done') {
                 return response()->json([
                     'status' => false,
