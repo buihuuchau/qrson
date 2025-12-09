@@ -95,7 +95,7 @@ class ShipmentController extends Controller
                 ], 200);
             } else {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 404,
                     'message' => 'Shipment No không tồn tại.',
                 ], 200);
@@ -254,7 +254,7 @@ class ShipmentController extends Controller
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 404,
                     'messages' => 'Shipment No không tồn tại. Vui lòng kiểm tra lại!',
                 ], 200);
@@ -263,19 +263,19 @@ class ShipmentController extends Controller
             $document = $this->documentService->find($result['document_id']);
             if (empty($document)) {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 404,
                     'messages' => 'Số chứng từ không tồn tại. Vui lòng kiểm tra lại!',
                 ], 200);
             } elseif ($document->shipment_id != $shipment->id) {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 409,
                     'messages' => 'Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!',
                 ], 200);
             } elseif ($document->status == 'done') {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 409,
                     'messages' => 'Số chứng từ đã hoàn tất, không thể xác nhận lưu nữa!',
                 ], 200);
@@ -289,7 +289,7 @@ class ShipmentController extends Controller
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
             if ($document->total_current != $document->total || count($codeProductTemps) != $document->total) {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 409,
                     'messages' => 'Số lượng Mã sản phẩm không khớp, không thể xác nhận lưu!',
                 ], 200);
@@ -355,7 +355,7 @@ class ShipmentController extends Controller
             } else {
                 DB::rollBack();
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 409,
                     'messages' => 'Không thể lưu các Mã sản phẩm cho Số chứng từ này.',
                 ], 200);

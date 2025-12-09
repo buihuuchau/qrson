@@ -90,7 +90,7 @@ class CodeProductController extends Controller
             ];
             $codeProducts = $this->codeProductTempService->filter($filterCodeProductTemp);
             return response()->json([
-                'status' => false,
+                'status' => true,
                 'status_code' => 200,
                 'message' => 'Lấy dữ liệu Mã sản phẩm của user đang đăng nhập.',
                 'data' => [

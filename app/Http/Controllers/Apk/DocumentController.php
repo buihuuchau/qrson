@@ -57,7 +57,7 @@ class DocumentController extends Controller
             $shipment = $this->shipmentService->find($result['shipment_id']);
             if (empty($shipment)) {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 404,
                     'message' => 'Shipment No không tồn tại.',
                 ], 200);
@@ -338,7 +338,7 @@ class DocumentController extends Controller
                 }
                 $message[] = 'Số chứng từ đã tồn tại!';
                 return response()->json([
-                    'status' => false,
+                    'status' => true,
                     'status_code' => 202,
                     'message' => $message,
                 ], 200);

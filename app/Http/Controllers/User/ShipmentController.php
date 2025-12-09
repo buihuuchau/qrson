@@ -88,7 +88,7 @@ class ShipmentController extends Controller
                 ], 200);
             } else {
                 return response()->json([
-                    'status' => true,
+                    'status' => false,
                     'status_code' => 404,
                     'message' => 'Shipment No không tồn tại.',
                 ], 200);
