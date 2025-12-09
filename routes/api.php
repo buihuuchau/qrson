@@ -36,5 +36,7 @@ Route::prefix('user')->group(function () {
         Route::get('/scan-code-product', [App\Http\Controllers\Apk\CodeProductController::class, 'scanCodeProduct']);
         Route::post('/code-product-add', [App\Http\Controllers\Apk\CodeProductController::class, 'add']);
         Route::post('/code-product-delete', [App\Http\Controllers\Apk\CodeProductController::class, 'delete']);
+
+        Route::post('/shipdoc-add', [App\Http\Controllers\Apk\DocumentController::class, 'addShipDoc']);
     });
 });

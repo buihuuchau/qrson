@@ -280,4 +280,113 @@ class DocumentController extends Controller
             ], 500);
         }
     }
+
+    public function addShipDoc()
+    {
+        try {
+            $acceptFields = [
+                'shipment_id',
+                'document_id',
+                'total',
+            ];
+            $result = Arr::only(request()->all(), $acceptFields);
+
+            $validator = Validator::make($result, (new documentAddRequest())->rules(), (new documentAddRequest())->messages());
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
+            $shipmentId = null;
+            $message = [];
+            $shipment = $this->shipmentService->find($result['shipment_id']);
+            if (!empty($shipment)) {
+                $shipmentId = $shipment->id;
+            } else {
+                $valueCreateShipment = [
+                    'id' => $result['shipment_id'],
+                    'status' => 'pending',
+                    'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
+                ];
+                $createShipment = $this->shipmentService->create($valueCreateShipment);
+                if ($createShipment) {
+                    $shipmentId = $createShipment->id;
+                    $message[] = 'Tạo mới Shipment No thành công.';
+                } else {
+                    $message[] = 'Tạo mới Shipment No thất bại.';
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => $message,
+                    ], 200);
+                }
+            }
+
+            $document = $this->documentService->find($result['document_id']);
+            if (!empty($document)) {
+                if ($document->shipment_id != $shipment->id) {
+                    $message[] = 'Số chứng từ không thuộc về Shipment No đã chọn. Vui lòng kiểm tra lại!';
+                    return response()->json([
+                        'status' => false,
+                        'status_code' => 409,
+                        'message' => $message,
+                    ], 200);
+                }
+                $message[] = 'Số chứng từ đã tồn tại!';
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 202,
+                    'message' => $message,
+                ], 200);
+            }
+
+            DB::beginTransaction();
+            $valueCreateDocument = [
+                'id' => $result['document_id'],
+                'shipment_id' => $shipmentId,
+                'total_current' => 0,
+                'total' => $result['total'],
+                'status' => 'pending',
+                'created_by' => Auth::guard('api')->user()->name . ' - ' . Auth::guard('api')->user()->phone,
+            ];
+            $createDocument = $this->documentService->create($valueCreateDocument);
+
+            $valueUpdateShipment = [
+                'status' => 'pending',
+            ];
+            $updateShipment = $this->shipmentService->update($shipmentId, $valueUpdateShipment);
+            if ($createDocument && $updateShipment) {
+                DB::commit();
+                $message[] = 'Tạo mới Số chứng từ thành công.';
+                return response()->json([
+                    'status' => true,
+                    'status_code' => 201,
+                    'message' => $message,
+                    'data' => [
+                        'document' => $createDocument,
+                    ],
+                ], 201);
+            } else {
+                DB::rollBack();
+                $message[] = 'Tạo mới Số chứng từ thất bại.';
+                return response()->json([
+                    'status' => false,
+                    'status_code' => 409,
+                    'message' => $message,
+                ], 409);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('Apk/DocumentController addShipDoc error: ' . $th->getMessage());
+            return response()->json([
+                'status' => false,
+                'status_code' => 500,
+                'message' => ['Lỗi hệ thống.'],
+            ], 500);
+        }
+    }
 }

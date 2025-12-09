@@ -12,6 +12,22 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : route('web.login');
+        if ($request->expectsJson()) {
+            abort(response()->json([
+                'status' => false,
+                'status_code' => 403,
+                'message' => 'Hành động chưa xác thực, hãy đăng nhập lại!'
+            ], 403));
+        } else {
+            if ($request->is('api/*')) {
+                abort(response()->json([
+                    'status' => false,
+                    'status_code' => 403,
+                    'message' => 'Api chưa được xác thực, hãy đăng nhập lại!'
+                ], 403));
+            } else {
+                return route('web.login');
+            }
+        }
     }
 }
