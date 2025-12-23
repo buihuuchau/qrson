@@ -188,4 +188,5 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
     ])->toArray(),
 
+    'percent_done' => env('PERCENT_DONE', 0.9),
 ];

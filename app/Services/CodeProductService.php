@@ -20,4 +20,14 @@ class CodeProductService extends BaseService
     {
         return CodeProductRepository::class;
     }
+
+    public function getExistingIds(array $ids): array
+    {
+        return $this->codeProductRepository->getExistingIds($ids);
+    }
+
+    public function insertBatch(array $rows): bool
+    {
+        return $this->codeProductRepository->insertBatch($rows);
+    }
 }

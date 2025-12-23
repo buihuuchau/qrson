@@ -100,9 +100,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $percentDone = ENV('PERCENT_DONE', 0.9);
-                                        @endphp
                                         @foreach ($documents as $key => $document)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -132,7 +129,7 @@
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     @if ($document->status != 'done')
-                                                        @if ($document->total_current >= $document->total * $percentDone)
+                                                        @if ($document->total_current >= $document->total * config('app.percent_done'))
                                                             <button class="btn btn-success confirmDocument"
                                                                 title="Phê duyệt" data-document-id="{{ $document->id }}"><i
                                                                     class="fas fa-check"></i></button>

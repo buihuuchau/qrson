@@ -19,4 +19,20 @@ class CodeProductTempRepository extends BaseRepository
     {
         return CodeProductTemp::class;
     }
+
+    public function getExistingIds(array $ids): array
+    {
+        return $this->model
+            ->whereIn('id', $ids)
+            ->pluck('id')
+            ->toArray();
+    }
+
+    public function insertBatch(array $rows): bool
+    {
+        if (empty($rows)) {
+            return true;
+        }
+        return $this->model->insert($rows);
+    }
 }

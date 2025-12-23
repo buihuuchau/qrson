@@ -213,7 +213,7 @@ class DocumentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
 
-            $percentDone = ENV('PERCENT_DONE', 0.9);
+            $percentDone = config('app.percent_done');
             $countDone = $document->total * $percentDone;
             if ($document->total_current < $countDone || count($codeProductTemps) < $countDone) {
                 return response()->json([

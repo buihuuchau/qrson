@@ -41,5 +41,7 @@ Route::prefix('user')->group(function () {
         Route::post('/code-product-delete', [App\Http\Controllers\Apk\CodeProductController::class, 'delete']);
 
         Route::post('/shipdoc-add', [App\Http\Controllers\Apk\DocumentController::class, 'addShipDoc']);
+
+        Route::post('/add-data', [App\Http\Controllers\Apk\ShipmentController::class, 'addData']);
     });
 });
