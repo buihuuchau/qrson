@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedSmallInteger('total_current')->default(0);
             $table->unsignedSmallInteger('total')->default(0);
             $table->enum('status', ['pending', 'done'])->default('pending');
-            $table->string('note')->nullable();
             $table->string('created_by');
             $table->timestamps();
         });
