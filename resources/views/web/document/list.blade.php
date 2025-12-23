@@ -95,10 +95,14 @@
                                             <th>Người nhập</th>
                                             <th>Thời gian nhập</th>
                                             <th>Trạng thái</th>
+                                            <th>Ghi chú</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $percentDone = ENV('PERCENT_DONE', 0.9);
+                                        @endphp
                                         @foreach ($documents as $key => $document)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
@@ -108,7 +112,7 @@
                                                 <td>{{ $document->total }}</td>
                                                 <td>{{ $document->created_by }}</td>
                                                 <td>{{ $document->created_at }}</td>
-                                                <td>
+                                                <td class="tbl_status">
                                                     @if ($document->status == 'pending')
                                                         @php
                                                             $draft = 1;
@@ -121,12 +125,18 @@
                                                         Đã xong
                                                     @endif
                                                 </td>
+                                                <td class="tbl_note">{{ $document->note }}</td>
                                                 <td>
-                                                    <a class="btn btn-primary" title="Chi tiết"
+                                                    <a class="btn btn-primary detailDocument" title="Chi tiết"
                                                         href="{{ route('web.code-product.list', ['shipment_id' => $document->shipment_id, 'document_id' => $document->id, 'draft' => $draft]) }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     @if ($document->status != 'done')
+                                                        @if ($document->total_current >= $document->total * $percentDone)
+                                                            <button class="btn btn-success confirmDocument"
+                                                                title="Phê duyệt" data-document-id="{{ $document->id }}"><i
+                                                                    class="fas fa-check"></i></button>
+                                                        @endif
                                                         <button class="btn btn-danger clearDocument" title="Xóa"
                                                             data-document-id="{{ $document->id }}"><i
                                                                 class="fas fa-trash"></i></button>
@@ -145,6 +155,7 @@
                                             <th>Người nhập</th>
                                             <th>Thời gian nhập</th>
                                             <th>Trạng thái</th>
+                                            <th>Ghi chú</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </tfoot>
@@ -162,6 +173,87 @@
 @endsection
 @section('custom_script')
     <script>
+        $('.confirmDocument').click(function(e) {
+            e.preventDefault();
+            let button = $(this);
+            let document_id = button.data('document-id');
+            Swal.fire({
+                title: "Xác nhận phê duyệt?",
+                text: "Số chứng từ:  " + document_id,
+                icon: "info",
+                input: "textarea",
+                inputLabel: "Ghi chú phê duyệt",
+                inputValue: "Đã kiểm tra và phê duyệt.",
+                inputAttributes: {
+                    maxlength: 255
+                },
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return "Vui lòng nhập ghi chú!";
+                    }
+                },
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Phê duyệt",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#loadingOverlay').css('display', 'flex');
+                    let note = result.value;
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('web.document.confirm') }}",
+                        data: {
+                            document_id: document_id,
+                            note: note,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.status_code == 200) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Thành công",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                button.closest('tr').find('.tbl_status').text('Đã xong');
+                                button.closest('tr').find('.tbl_note').text(note);
+                                let detailDocumentLink = button.closest('tr').find('.detailDocument');
+                                let href = detailDocumentLink.attr('href');
+                                href = href.replace(/draft=\d+/g, 'draft=0');
+                                detailDocumentLink.attr('href', href);
+                                button.closest('td').find('.clearDocument').remove();
+                                button.remove();
+                                $('#loadingOverlay').hide();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Thất bại",
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                $('#loadingOverlay').hide();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            let message = xhr.responseJSON && xhr.responseJSON.message ?
+                                xhr.responseJSON.message :
+                                'Đã có lỗi xảy ra.';
+                            Swal.fire({
+                                icon: "error",
+                                title: "Lỗi",
+                                text: message,
+                            });
+                            $('#loadingOverlay').hide();
+                        }
+                    });
+                }
+            });
+        });
         $('.clearDocument').click(function(e) {
             e.preventDefault();
             let button = $(this);

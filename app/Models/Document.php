@@ -19,6 +19,7 @@ class Document extends Model
         'total_current',
         'total',
         'status',
+        'note',
         'created_by',
     ];
 

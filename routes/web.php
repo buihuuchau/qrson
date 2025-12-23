@@ -15,6 +15,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/document-list', [App\Http\Controllers\Web\DocumentController::class, 'list'])->name('web.document.list');
             Route::post('/document-delete', [App\Http\Controllers\Web\DocumentController::class, 'delete'])->name('web.document.delete');
+            Route::post('/document-confirm', [App\Http\Controllers\Web\DocumentController::class, 'confirm'])->name('web.document.confirm');
 
             Route::get('/code-product-list', [App\Http\Controllers\Web\CodeProductController::class, 'list'])->name('web.code-product.list');
             Route::post('/code-product-delete', [App\Http\Controllers\Web\CodeProductController::class, 'delete'])->name('web.code-product.delete');

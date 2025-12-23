@@ -13,19 +13,10 @@ class CodeProductTempSeeder extends Seeder
     public function run(): void
     {
         DB::table('code_products')->truncate();
-        DB::table('code_products')->insert([
-            'id' => 'n92500000000000000000000000',
-            'shipment_id' => '5100054985',
-            'document_id' => '5002756032',
-            'created_by' => 'Tên User 1 - 0000000001',
-            'scan' => 'yes',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        DB::table('code_product_temps')->truncate();
+        DB::table('code_products')->truncate();
         for ($i = 1; $i <= 5; $i++) {
-            DB::table('code_product_temps')->insert([
-                'id' => 'CODE_PRODUCT_' . $i,
+            DB::table('code_products')->insert([
+                'id' => 'CODE_PRODUCT_DOCUMENT1_000' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'yes',
@@ -35,12 +26,56 @@ class CodeProductTempSeeder extends Seeder
             ]);
         }
         for ($i = 6; $i <= 9; $i++) {
-            DB::table('code_product_temps')->insert([
-                'id' => 'CODE_PRODUCT_' . $i,
+            DB::table('code_products')->insert([
+                'id' => 'CODE_PRODUCT_DOCUMENT1_000' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'no',
                 'created_by' => 'Tên User 1 - 0000000001',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        DB::table('code_products')->insert([
+            'id' => 'CODE_PRODUCT_DOCUMENT1_0010',
+            'shipment_id' => 'SHIPMENT1',
+            'document_id' => 'DOCUMENT1',
+            'scan' => 'no',
+            'created_by' => 'Tên User 1 - 0000000001',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        for ($i = 1; $i <= 5; $i++) {
+            DB::table('code_products')->insert([
+                'id' => 'CODE_PRODUCT_DOCUMENT3_000' . $i,
+                'shipment_id' => 'SHIPMENT2',
+                'document_id' => 'DOCUMENT3',
+                'scan' => 'yes',
+                'created_by' => 'Tên User 3 - 0000000003',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::table('code_product_temps')->truncate();
+        for ($i = 1; $i <= 5; $i++) {
+            DB::table('code_product_temps')->insert([
+                'id' => 'CODE_PRODUCT_DOCUMENT2_000' . $i,
+                'shipment_id' => 'SHIPMENT2',
+                'document_id' => 'DOCUMENT2',
+                'scan' => 'yes',
+                'created_by' => 'Tên User 2 - 0000000002',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        for ($i = 6; $i <= 9; $i++) {
+            DB::table('code_product_temps')->insert([
+                'id' => 'CODE_PRODUCT_DOCUMENT2_000' . $i,
+                'shipment_id' => 'SHIPMENT2',
+                'document_id' => 'DOCUMENT2',
+                'scan' => 'no',
+                'created_by' => 'Tên User 2 - 0000000002',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

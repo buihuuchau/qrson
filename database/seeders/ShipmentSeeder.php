@@ -14,20 +14,18 @@ class ShipmentSeeder extends Seeder
     {
         DB::table('shipments')->truncate();
         DB::table('shipments')->insert([
-            'id' => '5100054985',
+            'id' => 'SHIPMENT1',
             'status' => 'done',
             'created_by' => 'Tên User 1 - 0000000001',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        for ($i = 1; $i <= 5; $i++) {
-            DB::table('shipments')->insert([
-                'id' => 'SHIPMENT' . $i,
-                'status' => 'pending',
-                'created_by' => 'Tên User '.$i.' - 000000000'.$i,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        DB::table('shipments')->insert([
+            'id' => 'SHIPMENT2',
+            'status' => 'pending',
+            'created_by' => 'Tên User 2 - 0000000002',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

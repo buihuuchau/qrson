@@ -14,36 +14,34 @@ class DocumentSeeder extends Seeder
     {
         DB::table('documents')->truncate();
         DB::table('documents')->insert([
-            'id' => '5002756032',
-            'shipment_id' => '5100054985',
-            'total_current' => 1,
-            'total' => 1,
+            'id' => 'DOCUMENT1',
+            'shipment_id' => 'SHIPMENT1',
+            'total_current' => 10,
+            'total' => 10,
             'status' => 'done',
             'created_by' => 'Tên User 1 - 0000000001',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('documents')->insert([
-            'id' => 'DOCUMENT1',
-            'shipment_id' => 'SHIPMENT1',
+            'id' => 'DOCUMENT2',
+            'shipment_id' => 'SHIPMENT2',
             'total_current' => 9,
             'total' => 10,
             'status' => 'pending',
-            'created_by' => 'Tên User 1 - 0000000001',
+            'created_by' => 'Tên User 2 - 0000000002',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        for ($i = 2; $i <= 5; $i++) {
-            DB::table('documents')->insert([
-                'id' => 'DOCUMENT' . $i,
-                'shipment_id' => 'SHIPMENT1',
-                'total_current' => 0,
-                'total' => $i * 10,
-                'status' => 'pending',
-                'created_by' => 'Tên User 1 - 0000000001',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        DB::table('documents')->insert([
+            'id' => 'DOCUMENT3',
+            'shipment_id' => 'SHIPMENT2',
+            'total_current' => 5,
+            'total' => 5,
+            'status' => 'done',
+            'created_by' => 'Tên User 3 - 0000000003',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
