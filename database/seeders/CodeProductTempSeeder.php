@@ -16,7 +16,7 @@ class CodeProductTempSeeder extends Seeder
         DB::table('code_products')->truncate();
         for ($i = 1; $i <= 5; $i++) {
             DB::table('code_products')->insert([
-                'id' => 'CODE_PRODUCT_DOCUMENT1_000' . $i,
+                'id' => 'CODEPRODUCTDOCUMENT1000000' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'yes',
@@ -27,7 +27,7 @@ class CodeProductTempSeeder extends Seeder
         }
         for ($i = 6; $i <= 9; $i++) {
             DB::table('code_products')->insert([
-                'id' => 'CODE_PRODUCT_DOCUMENT1_000' . $i,
+                'id' => 'CODEPRODUCTDOCUMENT1000000' . $i,
                 'shipment_id' => 'SHIPMENT1',
                 'document_id' => 'DOCUMENT1',
                 'scan' => 'no',
@@ -37,7 +37,7 @@ class CodeProductTempSeeder extends Seeder
             ]);
         }
         DB::table('code_products')->insert([
-            'id' => 'CODE_PRODUCT_DOCUMENT1_0010',
+            'id' => 'CODEPRODUCTDOCUMENT10000010',
             'shipment_id' => 'SHIPMENT1',
             'document_id' => 'DOCUMENT1',
             'scan' => 'no',
@@ -47,7 +47,7 @@ class CodeProductTempSeeder extends Seeder
         ]);
         for ($i = 1; $i <= 5; $i++) {
             DB::table('code_products')->insert([
-                'id' => 'CODE_PRODUCT_DOCUMENT3_000' . $i,
+                'id' => 'CODEPRODUCTDOCUMENT3000000' . $i,
                 'shipment_id' => 'SHIPMENT2',
                 'document_id' => 'DOCUMENT3',
                 'scan' => 'yes',
@@ -60,7 +60,7 @@ class CodeProductTempSeeder extends Seeder
         DB::table('code_product_temps')->truncate();
         for ($i = 1; $i <= 5; $i++) {
             DB::table('code_product_temps')->insert([
-                'id' => 'CODE_PRODUCT_DOCUMENT2_000' . $i,
+                'id' => 'CODEPRODUCTDOCUMENT2000000' . $i,
                 'shipment_id' => 'SHIPMENT2',
                 'document_id' => 'DOCUMENT2',
                 'scan' => 'yes',
@@ -71,7 +71,7 @@ class CodeProductTempSeeder extends Seeder
         }
         for ($i = 6; $i <= 9; $i++) {
             DB::table('code_product_temps')->insert([
-                'id' => 'CODE_PRODUCT_DOCUMENT2_000' . $i,
+                'id' => 'CODEPRODUCTDOCUMENT2000000' . $i,
                 'shipment_id' => 'SHIPMENT2',
                 'document_id' => 'DOCUMENT2',
                 'scan' => 'no',
