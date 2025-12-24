@@ -1,20 +1,31 @@
-# PHP mới nhất (Apache)
+# =========================
+# Base image
+# =========================
 FROM php:8.3-apache
 
-# Cài các thư viện để xử lý QR, barcode, Excel
-RUN apt-get update && \
-    apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        libzip-dev \
-        zip \
-        libonig-dev \
-        libxml2-dev \
-        libicu-dev \
-        imagemagick \
-        libmagickwand-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+# =========================
+# System dependencies
+# =========================
+RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    libonig-dev \
+    libxml2-dev \
+    libicu-dev \
+    imagemagick \
+    libmagickwand-dev \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# =========================
+# PHP extensions
+# =========================
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         gd \
         mysqli \
@@ -23,14 +34,29 @@ RUN apt-get update && \
         zip \
         intl \
         mbstring \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+        opcache
 
-# Bật mod_rewrite
-RUN a2enmod rewrite
+# =========================
+# Imagick
+# =========================
+RUN pecl install imagick \
+    && docker-php-ext-enable imagick
 
-# Cấu hình VirtualHost cho qrson.test
+# =========================
+# Composer (QUAN TRỌNG)
+# =========================
+RUN curl -sS https://getcomposer.org/installer \
+    | php -- --install-dir=/usr/local/bin --filename=composer
+
+# =========================
+# Apache config
+# =========================
+RUN a2enmod rewrite \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# =========================
+# VirtualHost for Laravel
+# =========================
 RUN echo "<VirtualHost *:80>\n\
     ServerName qrson.test\n\
     DocumentRoot /var/www/html/public\n\
@@ -38,12 +64,37 @@ RUN echo "<VirtualHost *:80>\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
+    ErrorLog \${APACHE_LOG_DIR}/error.log\n\
+    CustomLog \${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>" > /etc/apache2/sites-available/qrson.conf \
     && a2ensite qrson.conf \
     && a2dissite 000-default.conf
 
-# Thư mục làm việc
+# =========================
+# OPcache (tăng tốc Laravel)
+# =========================
+RUN echo "opcache.enable=1\n\
+opcache.enable_cli=1\n\
+opcache.memory_consumption=128\n\
+opcache.interned_strings_buffer=16\n\
+opcache.max_accelerated_files=20000\n\
+opcache.validate_timestamps=1\n\
+opcache.revalidate_freq=2\n\
+opcache.fast_shutdown=1" \
+> /usr/local/etc/php/conf.d/opcache.ini
+
+# =========================
+# Workdir
+# =========================
 WORKDIR /var/www/html
 
-# Expose port Apache
+# =========================
+# Permissions
+# =========================
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www
+
+# =========================
+# Expose
+# =========================
 EXPOSE 80

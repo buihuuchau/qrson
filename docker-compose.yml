@@ -1,37 +1,35 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # ==========================
-  # MySQL (latest)
+  # MySQL
   # ==========================
-  qrson_mysql:
+  mysql:
     image: mysql:8.4
-    container_name: qrson_mysql
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: qrson
     command: --sql-mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - "D:/LamViec/Dyna/Project/qrson/docker/db:/var/lib/mysql"
+      - qrson_db:/var/lib/mysql
 
   # ==========================
   # PHP + Apache
   # ==========================
-  qrson_php:
+  php:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: qrson_php
     depends_on:
-      - qrson_mysql
+      - mysql
     ports:
-      - "80:80"
+      - "81:80"
     volumes:
-      - "D:/LamViec/Dyna/Project/qrson/docker/src/qrson:/var/www/html"
-    restart: always
+      - ./src/qrson:/var/www/html
+    restart: unless-stopped
 
-    extra_hosts:
-      - "qrson.test:127.0.0.1"
+volumes:
+  qrson_db:
