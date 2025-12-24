@@ -8,7 +8,6 @@ use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CodeProductController extends Controller
@@ -20,7 +19,7 @@ class CodeProductController extends Controller
     public function __construct(
         DocumentService $documentService,
         CodeProductTempService $codeProductTempService,
-        CodeProductService $codeProductService,
+        CodeProductService $codeProductService
     ) {
         $this->documentService = $documentService;
         $this->codeProductTempService = $codeProductTempService;
@@ -107,66 +106,6 @@ class CodeProductController extends Controller
         } catch (\Throwable $th) {
             Log::error('Web/CodeProductController list error: ' . $th->getMessage());
             abort(404);
-        }
-    }
-
-    public function delete(Request $request)
-    {
-        try {
-            $acceptFields = [
-                'code_product_id',
-            ];
-            $result = Arr::only(request()->all(), $acceptFields);
-
-            $codeProductTemp = $this->codeProductTempService->find($result['code_product_id']);
-            if (!$codeProductTemp) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 404,
-                    'message' => 'Mã sản phẩm không tồn tại.',
-                ], 200);
-            }
-
-            DB::beginTransaction();
-            $filterCodeProduct = [
-                'id' => $codeProductTemp->id,
-                'get' => 'first',
-            ];
-            $codeProductTemp = $this->codeProductTempService->filter($filterCodeProduct, 'document');
-
-            $valueUpdateDocument = [
-                'total_current' => $codeProductTemp->document->total_current - 1,
-            ];
-            $updateDocument = $this->documentService->update($codeProductTemp->document_id, $valueUpdateDocument);
-
-            $deleteCodeProductTemp = $this->codeProductTempService->delete($codeProductTemp->id);
-
-            if ($updateDocument && $deleteCodeProductTemp) {
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'status_code' => 200,
-                    'message' => 'Xóa mã sản phẩm thành công.',
-                    'data' => [
-                        'document' => $updateDocument,
-                    ]
-                ], 200);
-            } else {
-                DB::rollBack();
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Xóa mã sản phẩm thất bại.',
-                ], 200);
-            }
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error('Web/CodeProductController delete error: ' . $th->getMessage());
-            return response()->json([
-                'status' => false,
-                'status_code' => 500,
-                'message' => 'Lỗi hệ thống.',
-            ], 500);
         }
     }
 }

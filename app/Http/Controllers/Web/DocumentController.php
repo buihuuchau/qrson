@@ -213,16 +213,6 @@ class DocumentController extends Controller
             ];
             $codeProductTemps = $this->codeProductTempService->filter($filterCodeProductTemp);
 
-            $percentDone = config('app.percent_done');
-            $countDone = $document->total * $percentDone;
-            if ($document->total_current < $countDone || count($codeProductTemps) < $countDone) {
-                return response()->json([
-                    'status' => false,
-                    'status_code' => 409,
-                    'message' => 'Số lượng Mã sản phẩm chưa đủ, cần tối thiểu ' . ceil($countDone) . ' mã để xác nhận lưu!',
-                ], 200);
-            }
-
             DB::beginTransaction();
             $checkCreateCodeProduct = true;
             $checkDeleteCodeProductTemp = true;

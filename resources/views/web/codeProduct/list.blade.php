@@ -125,9 +125,6 @@
                                             <th>Thời gian quét</th>
                                             <th>Người quét</th>
                                             <th>Thực hiện manual</th>
-                                            @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
-                                                <th>Thao tác</th>
-                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -144,13 +141,6 @@
                                                         X
                                                     @endif
                                                 </td>
-                                                @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
-                                                    <td>
-                                                        <button class="btn btn-danger clearCodeProduct" title="Xóa"
-                                                            data-code-product-id="{{ $codeProduct->id }}"><i
-                                                                class="fas fa-trash"></i></button>
-                                                    </td>
-                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -163,9 +153,6 @@
                                             <th>Thời gian quét</th>
                                             <th>Người quét</th>
                                             <th>Thực hiện manual</th>
-                                            @if (!empty(request()->query('draft')) && request()->query('draft') == 1)
-                                                <th>Thao tác</th>
-                                            @endif
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -181,72 +168,5 @@
     </div>
 @endsection
 @section('custom_script')
-    <script>
-        $('.clearCodeProduct').click(function(e) {
-            e.preventDefault();
-            let button = $(this);
-            let code_product_id = button.data('code-product-id');
-            Swal.fire({
-                title: "Xác nhận xóa?",
-                text: "Mã sản phẩm " + code_product_id + " sẽ bị xóa và không thể khôi phục!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Xóa",
-                cancelButtonText: "Hủy"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#loadingOverlay').css('display', 'flex');
-                    $.ajax({
-                        type: "POST",
-                        url: "{{ route('web.code-product.delete') }}",
-                        data: {
-                            code_product_id: code_product_id,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        dataType: "json",
-                        success: function(response) {
-                            if (response.status_code == 200) {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Thành công",
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                let documentTotalCurrent = response.data.document.total_current;
-                                $("#document_total_current").text(documentTotalCurrent);
-                                button.closest('tr').remove();
-                                $("#example1 tbody tr").each(function(index) {
-                                    $(this).find("td:first").text(index + 1);
-                                });
-                                $('#loadingOverlay').hide();
-                            } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Thất bại",
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                $('#loadingOverlay').hide();
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            let message = xhr.responseJSON && xhr.responseJSON.message ?
-                                xhr.responseJSON.message :
-                                'Đã có lỗi xảy ra.';
-                            Swal.fire({
-                                icon: "error",
-                                title: "Lỗi",
-                                text: message,
-                            });
-                            $('#loadingOverlay').hide();
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+{{--  --}}
 @endsection

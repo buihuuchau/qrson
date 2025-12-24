@@ -29,6 +29,7 @@ class DocumentSeeder extends Seeder
             'total_current' => 9,
             'total' => 10,
             'status' => 'pending',
+            'note' => 'tao ngủ quên nên quét thiếu 1 cái',
             'created_by' => 'Tên User 2 - 0000000002',
             'created_at' => now(),
             'updated_at' => now(),

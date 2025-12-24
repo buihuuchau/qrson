@@ -18,7 +18,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/document-confirm', [App\Http\Controllers\Web\DocumentController::class, 'confirm'])->name('web.document.confirm');
 
             Route::get('/code-product-list', [App\Http\Controllers\Web\CodeProductController::class, 'list'])->name('web.code-product.list');
-            Route::post('/code-product-delete', [App\Http\Controllers\Web\CodeProductController::class, 'delete'])->name('web.code-product.delete');
 
             Route::get('/user-list', [App\Http\Controllers\Web\UserController::class, 'list'])->name('web.user.list');
             Route::post('/user-add', [App\Http\Controllers\Web\UserController::class, 'add'])->name('web.user.add');

@@ -174,13 +174,14 @@
             e.preventDefault();
             let button = $(this);
             let document_id = button.data('document-id');
+            let note_value = button.closest('tr').find('.tbl_note').text();
             Swal.fire({
                 title: "Xác nhận phê duyệt?",
                 text: "Số chứng từ:  " + document_id,
                 icon: "info",
                 input: "textarea",
                 inputLabel: "Ghi chú phê duyệt",
-                inputValue: "Đã kiểm tra và phê duyệt.",
+                inputValue: note_value + " - Admin đã xem và duyệt.",
                 inputAttributes: {
                     maxlength: 255
                 },
@@ -197,13 +198,13 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $('#loadingOverlay').css('display', 'flex');
-                    let note = result.value;
+                    let note_input = result.value;
                     $.ajax({
                         type: "POST",
                         url: "{{ route('web.document.confirm') }}",
                         data: {
                             document_id: document_id,
-                            note: note,
+                            note: note_input,
                             _token: "{{ csrf_token() }}"
                         },
                         dataType: "json",
@@ -217,7 +218,7 @@
                                     timer: 1500
                                 });
                                 button.closest('tr').find('.tbl_status').text('Đã xong');
-                                button.closest('tr').find('.tbl_note').text(note);
+                                button.closest('tr').find('.tbl_note').text(note_input);
                                 let detailDocumentLink = button.closest('tr').find('.detailDocument');
                                 let href = detailDocumentLink.attr('href');
                                 href = href.replace(/draft=\d+/g, 'draft=0');
