@@ -26,12 +26,6 @@ Route::prefix('user')->group(function () {
     Route::middleware(['auth:api', 'roleUser'])->group(function () {
         Route::get('/logout', [App\Http\Controllers\Apk\LoginController::class, 'logout']);
 
-        Route::get('/scan-shipment', [App\Http\Controllers\Apk\ShipmentController::class, 'scanShipment']);
-
-        Route::get('/scan-document', [App\Http\Controllers\Apk\DocumentController::class, 'scanDocument']);
-
-        Route::get('/scan-code-product', [App\Http\Controllers\Apk\CodeProductController::class, 'scanCodeProduct']);
-
         Route::post('/add-data', [App\Http\Controllers\Apk\ShipmentController::class, 'addData']);
     });
 });

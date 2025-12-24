@@ -8,7 +8,6 @@ use App\Services\CodeProductService;
 use App\Services\CodeProductTempService;
 use App\Services\DocumentService;
 use App\Services\ShipmentService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,33 +30,6 @@ class ShipmentController extends Controller
         $this->documentService = $documentService;
         $this->codeProductTempService = $codeProductTempService;
         $this->codeProductService = $codeProductService;
-    }
-
-    public function scanShipment(Request $request)
-    {
-        try {
-            $filterShipment = [
-                'created_by' => Auth::user()->name . ' - ' . Auth::user()->phone,
-                'orderBy' => 'created_at',
-                'get' => true,
-            ];
-            $shipments = $this->shipmentService->filter($filterShipment);
-            return response()->json([
-                'status' => true,
-                'status_code' => 200,
-                'message' => 'Lấy dữ liệu Shipment No của user đang đăng nhập.',
-                'data' => [
-                    'shipments' => $shipments,
-                ],
-            ], 200);
-        } catch (\Throwable $th) {
-            Log::error('Apk/ShipmentController scan error: ' . $th->getMessage());
-            return response()->json([
-                'status' => false,
-                'status_code' => 500,
-                'message' => 'Lỗi hệ thống.',
-            ], 500);
-        }
     }
 
     public function addData(addDataRequest $request)
