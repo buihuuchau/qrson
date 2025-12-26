@@ -65,7 +65,7 @@ class ShipmentController extends Controller
                     $message[] = 'Tạo mới Shipment No thất bại.';
                     return response()->json([
                         'status' => false,
-                        'status_code' => 500,
+                        'status_code' => 501,
                         'message' => $message,
                     ], 200);
                 }
@@ -101,7 +101,7 @@ class ShipmentController extends Controller
                     $message[] = 'Rollback tất cả.';
                     return response()->json([
                         'status' => false,
-                        'status_code' => 500,
+                        'status_code' => 502,
                         'message' => $message,
                     ], 200);
                 }
@@ -162,7 +162,7 @@ class ShipmentController extends Controller
                     $message[] = 'Rollback tất cả.';
                     return response()->json([
                         'status' => false,
-                        'status_code' => 400,
+                        'status_code' => 401,
                         'message' => $message,
                     ], 200);
                 }
@@ -176,7 +176,7 @@ class ShipmentController extends Controller
                 $message[] = 'Rollback tất cả.';
                 return response()->json([
                     'status' => false,
-                    'status_code' => 400,
+                    'status_code' => 402,
                     'message' => $message,
                     'data' => [
                         'list_codeProduct_valid' => $newItems
@@ -190,7 +190,7 @@ class ShipmentController extends Controller
                         $message[] = 'Rollback tất cả.';
                         return response()->json([
                             'status' => false,
-                            'status_code' => 400,
+                            'status_code' => 403,
                             'message' => $message,
                             'data' => [
                                 'list_codeProduct_valid' => $newItems
@@ -215,16 +215,16 @@ class ShipmentController extends Controller
                         $message[] = 'Thêm Mã sản phẩm vào Số chứng từ thành công vào bảng tạm.';
                         return response()->json([
                             'status' => true,
-                            'status_code' => 200,
+                            'status_code' => 201,
                             'message' => $message,
                         ], 200);
                     } else {
                         DB::rollBack();
-                        $message[] = 'Thêm Mã sản phẩm vào Số chứng từ thất bại.';
+                        $message[] = 'Thêm Mã sản phẩm vào Số chứng từ vào bảng tạm thất bại.';
                         $message[] = 'Rollback tất cả.';
                         return response()->json([
                             'status' => false,
-                            'status_code' => 500,
+                            'status_code' => 503,
                             'message' => $message,
                         ], 200);
                     }
@@ -263,16 +263,16 @@ class ShipmentController extends Controller
                         $message[] = 'Thêm Mã sản phẩm vào Số chứng từ thành công vào bảng thật.';
                         return response()->json([
                             'status' => true,
-                            'status_code' => 200,
+                            'status_code' => 202,
                             'message' => $message,
                         ], 200);
                     } else {
                         DB::rollBack();
-                        $message[] = 'Thêm Mã sản phẩm vào Số chứng từ thất bại.';
+                        $message[] = 'Thêm Mã sản phẩm vào Số chứng từ vào bảng chính thất bại.';
                         $message[] = 'Rollback tất cả.';
                         return response()->json([
                             'status' => false,
-                            'status_code' => 500,
+                            'status_code' => 504,
                             'message' => $message,
                         ], 200);
                     }
