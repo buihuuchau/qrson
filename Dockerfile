@@ -89,10 +89,20 @@ opcache.fast_shutdown=1" \
 WORKDIR /var/www/html
 
 # =========================
+# Copy source code
+# =========================
+COPY . /var/www/html
+
+# =========================
+# Install Laravel dependencies
+# =========================
+RUN composer install --no-dev --optimize-autoloader
+
+# =========================
 # Permissions
 # =========================
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
 
 # =========================
 # Expose
