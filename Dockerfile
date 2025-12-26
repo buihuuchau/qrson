@@ -4,7 +4,7 @@
 FROM php:8.3-apache
 
 # =========================
-# System deps (tối thiểu)
+# System dependencies tối thiểu
 # =========================
 RUN apt-get update && apt-get install -y \
     libzip-dev \
@@ -18,12 +18,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # =========================
-# PHP extensions cho Laravel
+# PHP extensions cho Laravel + PostgreSQL
 # =========================
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo \
-        pdo_mysql \
+        pdo_pgsql \
         zip \
         intl \
         mbstring \
@@ -42,15 +42,15 @@ RUN a2enmod rewrite \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # =========================
-# Laravel VirtualHost
+# Laravel VirtualHost (port cố định 80)
 # =========================
-RUN printf "<VirtualHost *:%s>\n\
+RUN printf "<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
-</VirtualHost>" "$PORT" > /etc/apache2/sites-available/laravel.conf \
+</VirtualHost>" > /etc/apache2/sites-available/laravel.conf \
     && a2ensite laravel.conf \
     && a2dissite 000-default.conf
 
@@ -60,12 +60,12 @@ RUN printf "<VirtualHost *:%s>\n\
 WORKDIR /var/www/html
 
 # =========================
-# Copy source
+# Copy source code
 # =========================
 COPY . .
 
 # =========================
-# Install deps
+# Install Laravel dependencies
 # =========================
 RUN composer install --no-dev --optimize-autoloader
 
@@ -76,7 +76,6 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 # =========================
-# Render uses PORT env
+# Start Apache
 # =========================
-EXPOSE 10000
 CMD ["apache2-foreground"]
