@@ -1,52 +1,39 @@
 # =========================
-# Base image
+# Base
 # =========================
 FROM php:8.3-apache
 
 # =========================
-# System dependencies
+# System deps (tối thiểu)
 # =========================
 RUN apt-get update && apt-get install -y \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
     libzip-dev \
-    zip \
     unzip \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
-    imagemagick \
-    libmagickwand-dev \
     git \
     curl \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # =========================
-# PHP extensions
+# PHP extensions cho Laravel
 # =========================
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
-        gd \
-        mysqli \
         pdo \
         pdo_mysql \
         zip \
         intl \
         mbstring \
+        gd \
         opcache
 
 # =========================
-# Imagick
+# Composer
 # =========================
-RUN pecl install imagick \
-    && docker-php-ext-enable imagick
-
-# =========================
-# Composer (QUAN TRỌNG)
-# =========================
-RUN curl -sS https://getcomposer.org/installer \
-    | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # =========================
 # Apache config
@@ -55,33 +42,17 @@ RUN a2enmod rewrite \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # =========================
-# VirtualHost for Laravel
+# Laravel VirtualHost
 # =========================
-RUN echo "<VirtualHost *:80>\n\
-    ServerName qrson.test\n\
+RUN printf "<VirtualHost *:%s>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
-    ErrorLog \${APACHE_LOG_DIR}/error.log\n\
-    CustomLog \${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>" > /etc/apache2/sites-available/qrson.conf \
-    && a2ensite qrson.conf \
+</VirtualHost>" "$PORT" > /etc/apache2/sites-available/laravel.conf \
+    && a2ensite laravel.conf \
     && a2dissite 000-default.conf
-
-# =========================
-# OPcache (tăng tốc Laravel)
-# =========================
-RUN echo "opcache.enable=1\n\
-opcache.enable_cli=1\n\
-opcache.memory_consumption=128\n\
-opcache.interned_strings_buffer=16\n\
-opcache.max_accelerated_files=20000\n\
-opcache.validate_timestamps=1\n\
-opcache.revalidate_freq=2\n\
-opcache.fast_shutdown=1" \
-> /usr/local/etc/php/conf.d/opcache.ini
 
 # =========================
 # Workdir
@@ -89,22 +60,23 @@ opcache.fast_shutdown=1" \
 WORKDIR /var/www/html
 
 # =========================
-# Copy source code
+# Copy source
 # =========================
-COPY . /var/www/html
+COPY . .
 
 # =========================
-# Install Laravel dependencies
+# Install deps
 # =========================
 RUN composer install --no-dev --optimize-autoloader
 
 # =========================
 # Permissions
 # =========================
-RUN chown -R www-data:www-data /var/www/html \
+RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 # =========================
-# Expose
+# Render uses PORT env
 # =========================
-EXPOSE 80
+EXPOSE 10000
+CMD ["apache2-foreground"]
